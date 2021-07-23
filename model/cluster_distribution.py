@@ -42,13 +42,14 @@ class Mod_MyFunctions:
         if imf_type == 0:
             a1 = A1 * np.exp(-((x - np.log10(mc))**2)/2.0/sigma**2)
             a2 = A2 * (10.0**x)**(x0-1)
-            return np.where(x <= np.log10(mnorm), a1, a2)
+            return np.where(x <= np.log10(mnorm), a1)
+            return np.where(x > log10(mnorm), a2)
 
         if imf_type == 1:
             a1 = A1 * np.exp(-((x - np.log10(mc))**2)/2.0/sigma**2)
             a2 = A2 * (10.0**x)**(x0-0)
-            return np.where(x <= np.log10(mnorm), a1, a2)
-            return y
+            return np.where(x <= np.log10(mnorm), a1)
+            return np.where(x > log10(mnorm), a2)
 
         if imf_type == 2:
             a1 = A1 * np.exp(-((x - np.log10(mc))**2)/2.0/sigma**2)
