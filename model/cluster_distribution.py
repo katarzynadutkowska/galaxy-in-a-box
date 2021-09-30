@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
-
-
 import numpy as np
 import numpy.random
 from math import *
@@ -34,22 +31,16 @@ class Mod_MyFunctions:
         sigma = 0.69
         A2 = 4.43e-2
         x0 = -1.3
-        mnorm_2 = 4.0
-        Al = 0.140
-        nc_vd =25
-        x_vd = -0.3
 
         if imf_type == 0:
             a1 = A1 * np.exp(-((x - np.log10(mc))**2)/2.0/sigma**2)
             a2 = A2 * (10.0**x)**(x0-1)
-            return np.where(x <= np.log10(mnorm), a1)
-            return np.where(x > log10(mnorm), a2)
+            return np.where(x <= np.log10(mnorm), a1, a2)
 
         if imf_type == 1:
             a1 = A1 * np.exp(-((x - np.log10(mc))**2)/2.0/sigma**2)
             a2 = A2 * (10.0**x)**(x0-0)
-            return np.where(x <= np.log10(mnorm), a1)
-            return np.where(x > log10(mnorm), a2)
+            return np.where(x <= np.log10(mnorm), a1, a2)
 
         if imf_type == 2:
             a1 = A1 * np.exp(-((x - np.log10(mc))**2)/2.0/sigma**2)
@@ -188,17 +179,29 @@ class Mod_MassRad:
         nC0 = int(numpy.round(numpy.size(lm)*age_temp[0]))
         nCI = int(numpy.round(numpy.size(lm)*age_temp[1]))
 
+        nC0_hm = int(numpy.round(numpy.size(hm)*age_temp[0]))
+        nCI_hm = int(numpy.round(numpy.size(hm)*age_temp[1]))
+
         lm0 = lm[:nC0]
         lmi = lm[nC0:nC0+nCI]
         lmii = lm[nC0+nCI:]
 
-        # 4. If Class 0 source, assume envelope mass is 3 times higher; for Class I's, M_env is 1.5 times highe
+        hm0 = hm[:nC0_hm]
+        hmi = hm[nC0_hm:nC0_hm+nCI_hm]
+        hmii = hm[nC0_hm+nCI_hm:]
+
+        # 4. If Class 0 source, assume envelope mass is 3 times higher; for Class I's, M_env is 1.5 times higher
 
         self.m[lm0] = 3. * m_temp[lm0]
         self.m[lmi] = 1.5 * m_temp[lmi]
+        self.m[hm0] = 3. * m_temp[hm0]
+        self.m[hmi] = 1.5 * m_temp[hmi]
 
         self.mass_flag = numpy.zeros(N)
         self.mass_flag[hm] = 2
+        self.mass_flag[hm0] = 3
+        self.mass_flag[hmi] = 4
+        self.mass_flag[hmii] = 5
         self.mass_flag[lm0] = 10
         self.mass_flag[lmi] = 11
         self.mass_flag[lmii] = 12
@@ -218,6 +221,8 @@ class Mod_MassRad:
             f.write(' \n')
             f.write('Number of LM Class 0 sources: %3i \n' %(nC0))
             f.write('Number of LM Class I sources: %3i \n' %(nCI))
+            f.write('Number of HM Class 0 sources: %3i \n' %(nC0_hm))
+            f.write('Number of HM Class I sources: %3i \n' %(nCI_hm))
             f.close()
 
         x = rad_m[:]*np.cos(phi[:])

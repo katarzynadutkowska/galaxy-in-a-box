@@ -1,7 +1,6 @@
 dist ./results/distribution.npy    # name of distribution file
-obs properties.dat       # name of file with observational properties
 bob 7.6e6                # distance (pc)
 dim 1280                 # image size (pixels)
 psize 0.51               # pixel size (arcsec)
-beam 2.0                 # beam (arcsec)
+beam 2.55                # beam (arcsec)
 tol 1                    # correlation tolerance in sigmas

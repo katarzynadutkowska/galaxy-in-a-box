@@ -3,12 +3,11 @@ mmin    1e4     # min. cluster mass
 mmax    1e6     # max. cluster mass
 Rg      12.0    # galactocentric radius (kpc)
 hR      2.38    # scale-length; Casasola et al. 2017; 1.04' +- 0.06
-alpha   -1.64   # mass spectrum slope; Roman-Duval et al. 2010
-gamma   1.96     # slope for mass-size relation; Roman-Duval et al. 2010
+alpha   1.64    # mass spectrum slope; Roman-Duval et al. 2010
+gamma   1.96    # slope for mass-size relation; Roman-Duval et al. 2010
 X       000     # ------ Modify the parameters below to change the spatial distribution
 A       8.0     # scaling parameter
 B       1.0     # controls arm sweep and bar size
 N       8.26    # controls the amount of winding
 phi     500     # phi (angle) coverage (deg)
 X       000     # ------ Modify the parameter below only if you want to scale the size of the galaxy on the grid
-p_grid  20      # pixel size in pc of the initial galaxy grid (before the convolution with the beam)

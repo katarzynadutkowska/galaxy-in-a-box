@@ -4,6 +4,7 @@
 # 2021
 
 import numpy as np
+from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 import matplotlib
 import math
@@ -22,8 +23,8 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from timer import Timer # Here we call the 'timer.py' script added in the folder
-import Galaxy_clusters as cd
-import Galaxycluster_emission as ce
+import cluster_distribution as cd
+import cluster_emission as ce
 import time
 timestr = time.strftime("%Y%m%d-%H%M%S") # Here we save the time of running the
                                          # script; used later to save files
@@ -37,8 +38,8 @@ print('╰━━━┻╯╰┻━┻╯╰┻╯╰┻━╮╭╯╱╱╰┻�
 print('╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭━╯┃')
 print('╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╰━━╯\n')
 print('Welcome!\n\
-Note: If you want to change something, please look at cluster_setup,\n\
-image_setup or galaxy_setup files before you change something in the code.\n')
+Note: If you want to commit any changes, please look at cluster_setup,\n\
+image_setup or galaxy_setup files before altering the code itself.\n')
 it_number = np.int32(input('How many times would you like to run the code?\n\
 : '))
 if it_number == 0:
@@ -58,13 +59,13 @@ t.start() # t.stop() is the last line of the code
 #################################
 
 params={
-	'axes.labelsize'	   : 29,
+	'axes.labelsize'	   : 31,
 	'axes.linewidth'	   : 1.5,
 	'lines.markeredgewidth': 1.5,
-	'font.size'			   : 29,
-	'legend.fontsize'	   : 24,
-	'xtick.labelsize'	   : 29,
-	'ytick.labelsize'	   : 29,
+	'font.size'			   : 31,
+	'legend.fontsize'	   : 31,
+	'xtick.labelsize'	   : 31,
+	'ytick.labelsize'	   : 31,
 	'xtick.major.size'	   : 17,
 	'xtick.minor.size'	   : 13,
 	'ytick.major.size'	   : 17,
@@ -109,18 +110,27 @@ def spatial_mass_dist(
 	phi = math.radians(phi)            # convert deg to rad
 
 	### Mass distribution ###
-	MassDist  = []
-	massrange = np.arange(mmin,mmax,1) # create an array with masses in range [mmin, mmax) with a step = 1
-	MassDist  = massrange**(alpha)     # create a mass distribution based on alpha
-	MassDistribution = (MassDist/max(MassDist))*mmax
+	def mass_spectrum(x,alpha):
+		mass_spectrum = x**(-alpha)
+		return mass_spectrum
 
-	mass = []
-	while len(mass) < (NC):
-		MassDist = np.random.choice(MassDistribution,size = 1)
-		if MassDist > mmin:
-			mass.append(MassDist)
-	new_MassDistribution = [[i[0]] for i in mass]
+	def mass_dist(
+		mmin,
+		mmax,
+		NC,
+		alpha):
 
+		result = []
+		while len(result) < NC:
+			x = np.random.uniform(np.log10(mmin), np.log10(mmax), size=10*NC)
+			y = np.random.uniform(0, 1, size=10*NC)
+			result.extend(x[np.where(y < mass_spectrum(x,alpha))])
+
+		md = np.array(result[:NC])
+		return 10**md
+
+	MassDistribution = np.asarray(mass_dist(mmin = mmin, mmax = mmax, NC = np.int32(NC), alpha = alpha))
+	new_MassDistribution = [[i] for i in MassDistribution]
 
 	### Initial parameters for spatial distribution ###
 	# Ringermacher & Mead 2009
@@ -160,7 +170,7 @@ def spatial_mass_dist(
 	SpatialMassArray = np.append(SpatialArray, new_MassDistribution,1)
 	SpatialX         = SpatialMassArray[:, 0]
 	SpatialY         = SpatialMassArray[:, 1]
-	Mass             = (SpatialMassArray[:, 2]).flatten()
+	Mass             = SpatialMassArray[:, 2]
 
 	return Mass, SpatialX, SpatialY
 
@@ -183,38 +193,52 @@ for line in open("./setup_files/cluster_setup.dat","r").readlines():
 	cluster_setup[line.split()[0]]=float(line.split()[1])
 
 # For iterations uncomment these lines (and comment the ones that are currently active, besides 'Mcm')
-# SFE = [,] # Here provide all of the values which you want to run the model over
-# IMF = [,] # Here provide all of the values which you want to run the model over
-# tff = [,] # Here provide all of the values which you want to run the model over
 
-SFE     = [cluster_setup['SFE']]
-IMF     = [cluster_setup['imf']]
-tff     = [cluster_setup['tff']]
-start   = 1
-end     = it_number+1
-iterat  = np.arange(start,end,1)
+SFE    = cluster_setup['SFE']
+imf    = int(cluster_setup['imf'])
+tff    = cluster_setup['tff']
+start  = 1
+end    = it_number+1
+iterat = np.arange(start,end,1)
 
 Mcm     = cluster_setup['Mcm']
 Mcm_gal = np.asarray(mass)
 
+imf_val = [0]
+SFE_val = [0.1]
+tff_val = [1.0]
+
 for z in iterat:
-	for n in tff:
-		for j in IMF:
-			for s in SFE:
+	for n in tff_val:
+		for j in imf_val:
+			for s in SFE_val:
 				for i in Mcm_gal:
-					f = open("./setup_files/cluster_setup.dat")
-					fout = open("./setup_files/cluster_setup_change.dat", "wt")
+
+					f = open("./setup_files/cluster_setup.dat",'r')
+					fout = open("./setup_files/cluster_setup_change.dat", "w+")
+
 					for line in f:
-						fout.write(line.replace(str(Mcm), str(i)))
+						line = line.replace(str(Mcm), str(i))
+						fout.write(line)
+
 						for line in f:
-							fout.write(line.replace(str(SFE), str(s)))
+							line = line.replace(str(SFE), str(s))
+							fout.write(line)
+
 							for line in f:
-								fout.write(line.replace(str(IMF),str(j)))
+								line = line.replace(str(imf),str(j),1)
+								fout.write(line)
+
 								for line in f:
-									fout.write(line.replace(str(tff),str(n)))
-					f.close()
+									line = line.replace(str(tff),str(n))
+									fout.write(line)
+
 					fout.close()
-					outputfile = "./results/gal_emission"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+"_iteration="+str(z)+"_date="+timestr+".csv"
+					f.close()
+
+
+
+					outputfile = "./results/gal_emission"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+"_iteration="+str(z)+".csv" # "_date="+timestr+
 					newname    = "./results/distributions_Mcm="+str(i)+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+"_iteration="+str(z)+".npy"
 					distribution = cd.Mod_distribution()
 					distribution.calc(output = 0)
@@ -279,7 +303,7 @@ for z in iterat:
 				else:
 					max_y = abs(np.min(Y))
 
-				def noisy(image): # generate and add gaussian noise to emission map; not in use
+				def noisy(image): # generate and add gaussian noise to emission map; currently not in use
 					row,col = image.shape
 					mean = 0
 					var = 0.001
@@ -342,13 +366,14 @@ for z in iterat:
 				header['RESTFRQ'] =   9.879267000000E+11
 				header['SPECSYS'] = 'LSRK    '
 				hdu = fits.PrimaryHDU(im_obs, header=header)
-				hdu.writeto("./results/Gal_Template"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+"_iteration="+str(z)+"_date="+timestr+".fits", overwrite = True)
+				hdu.writeto("./results/Gal_Template"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+"_iteration="+str(z)+".fits", overwrite = True) #"_date="+timestr+
 
 				print ("Peak intensity in image %s is %6.5f Jy km/s/beam" %(str(z),im_obs.max()))
-
+				#print ("Lowest intensity in image %s is %6.5f Jy km/s/beam" %(str(z),im_obs.min()))
+				'''
 				### Image plotting ###
-				fig, ax = plt.subplots(figsize=[15,12])
-				my_cmap = copy.copy(matplotlib.cm.get_cmap('pink')) # copy the default cmap
+				fig, ax = plt.subplots(figsize=[13,10])
+				my_cmap = copy.copy(matplotlib.cm.get_cmap('bone')) # copy the default cmap
 				my_cmap.set_bad([0,0,0])
 
 				i_map = ax.imshow(
@@ -361,7 +386,7 @@ for z in iterat:
 				)
 
 				cbar = plt.colorbar(i_map)
-				cbar.set_label('Jy km s$^{-1}$ beam$^{-1}$')
+				cbar.set_label('Jy km s$^{-1}$ beam$^{-1}$',labelpad=15)
 				#ax.contour(np.arange(1,1402,1),np.arange(1,1402,1),im_obs,origin="lower",colors='yellow',levels=[0.03],linewidths=0.2)
 				#ax.set_xlabel('Offset (arcmin)')
 				#ax.set_ylabel('Offset (arcmin)')
@@ -396,8 +421,7 @@ for z in iterat:
 				#plt.yticks(visible=False)
 
 				############################## Add beam to your plot ##################################
-				rad_to_arcsec = 206264.806247                         # radian-to-arcsec conversion
-				beam_ellipse  = (resolution/rad_to_arcsec)*dist/1000. # beam size in data coorindates; here in kpc
+				beam_ellipse  = (resolution/conv_)*dist/1000. # beam size in data coorindates; here in kpc
 				#beam_ellipse  = 0.2368 # M51 'at z=3' with beam of 0.03''
 				# (1) First we create a class of an anchored ellipse
 				class AnchoredEllipse(AnchoredOffsetbox):
@@ -419,6 +443,7 @@ for z in iterat:
 				# (3) Draw it (comment the line below if you don't want to add your beam)
 				#draw_ellipse(axins)
 
-				plt.savefig("./results/Gal_Template"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+"_iteration="+str(z)+"_date="+timestr+".pdf",bbox_inches='tight')
+				plt.savefig("./results/Gal_Template"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+"_iteration="+str(z)+".pdf",bbox_inches='tight') #"_date="+timestr+
+				'''
 
 t.stop() # Comment this if you commented the timer at the beginning of the code!

@@ -13,7 +13,7 @@ from scipy.stats import norm
 import sys
 import csv
 import os
-import mysql.connector as mysql
+import requests
 
 ################################################################################
 #
@@ -88,66 +88,35 @@ ofit = ObsFit()
 # Loading data from MySQL Water_Emission_Database
 #
 
-#----Connecting to MYSQL;
-db = mysql.connect(
-    host = "localhost",
-    user = "root",
-    passwd = "#kukurydzA94#"
-)
-#----Defining something (whatever that is) allowing us executing commands;
-cursor = db.cursor()
+colnames = ['obs_id', 'object', 'obj_type', 'ra_2000', 'dec_2000', 'transition', 'freq',\
+            'telescope', 'instrument', 'obs_res', 'distance', 'luminosity', 'tbol', 'menv',\
+            'vlsr', 'flux', 'flux_err', 'unit','ref','extra']
 
-#obj_type LIKE '%LM%' OR '%IM%' AND
-#
-query1 = "SELECT flux  FROM Water_Emission_Database.wed_988_wish WHERE ref NOT LIKE '%Kristensen et al. 2013%'"
-cursor.execute(query1)
-flux = np.asarray(cursor.fetchall())
+url = 'https://katarzynadutkowska.github.io/WED/Database/WED_988.csv'
+flux = []
+lbol = []
+diss = []
+menv = []
+beam = []
 
-query2 = "SELECT luminosity  FROM Water_Emission_Database.wed_988_wish WHERE ref NOT LIKE '%Kristensen et al. 2013%'"
-cursor.execute(query2)
-lbol = np.asarray(cursor.fetchall())
+with requests.Session() as s:
+    download = s.get(url)
+    decoded_content = download.content.decode('utf-8')
+    data = csv.reader(decoded_content.splitlines(), delimiter=',')
+    next(data)
+    data_list = list(data)
+    for row in data_list:
+        flux.append(row[colnames.index('flux')])
+        lbol.append(row[colnames.index('luminosity')])
+        diss.append(row[colnames.index('distance')])
+        menv.append(row[colnames.index('menv')])
+        beam.append(row[colnames.index('obs_res')])
 
-query3 = "SELECT distance  FROM Water_Emission_Database.wed_988_wish WHERE ref NOT LIKE '%Kristensen et al. 2013%'"
-cursor.execute(query3)
-dist = np.asarray(cursor.fetchall())
-
-query4 = "SELECT menv FROM Water_Emission_Database.wed_988_wish WHERE ref NOT LIKE '%Kristensen et al. 2013%'"
-cursor.execute(query4)
-menv = np.asarray(cursor.fetchall())
-
-query5 = "SELECT obs_res  FROM Water_Emission_Database.wed_988_wish WHERE ref NOT LIKE '%Kristensen et al. 2013%'"
-cursor.execute(query5)
-beam = np.asarray(cursor.fetchall())
-
-########################################
-############ Data in CO ################
-
-#query1 = "SELECT Flux  FROM Water_Emission_Database.MasterCO WHERE F_units LIKE 'K*km*{s-1}' and Transition LIKE '10-9'"
-#cursor.execute(query1)
-#flux = np.asarray(cursor.fetchall())
-
-#query2 = "SELECT Luminosity FROM Water_Emission_Database.MasterCO WHERE F_units LIKE 'K*km*{s-1}' and Transition LIKE '10-9'"
-#cursor.execute(query2)
-#lbol = np.asarray(cursor.fetchall())
-
-#query3 = "SELECT Distance  FROM Water_Emission_Database.MasterCO WHERE F_units LIKE 'K*km*{s-1}' and Transition LIKE '10-9'"
-#cursor.execute(query3)
-#dist = np.asarray(cursor.fetchall())
-
-#query4 = "SELECT menv FROM Water_Emission_Database.MasterCO WHERE F_units LIKE 'K*km*{s-1}' and Transition LIKE '10-9'"
-#cursor.execute(query4)
-#menv = np.asarray(cursor.fetchall())
-
-#query5 = "SELECT Resolution FROM Water_Emission_Database.MasterCO WHERE F_units LIKE 'K*km*{s-1}' and Transition LIKE '10-9'"
-#cursor.execute(query5)
-#beam = np.asarray(cursor.fetchall())
-
-
-flux = np.concatenate(flux)
-lbol = np.concatenate(lbol)
-diss = np.concatenate(dist)
-menv = np.concatenate(menv)
-beam = np.concatenate(beam)
+flux = [i == 'NaN' if i == 'NULL' else float(i) for i in flux]
+lbol = [i == 'NaN' if i == 'NULL' else float(i) for i in lbol]
+diss = [i == 'NaN' if i == 'NULL' else float(i) for i in diss]
+menv = [i == 'NaN' if i == 'NULL' else float(i) for i in menv]
+beam = [i == 'NaN' if i == 'NULL' else float(i) for i in beam]
 
 TdV  = []
 Dist = []
@@ -202,20 +171,24 @@ class Mod_Template:
         fit, flag = ofit.correlation_test(menv, i_dist, tol)
 
         # Isolate Class 0 and I sources from the model
-        cl0 = ((model[6] == 10) | (model[6] == 2))
-        cl1 = (model[6] == 11)
+        cl0    = (model[6] == 10)
+        cl1    = (model[6] == 11)
+        cl0_hm = (model[6] == 3)
+        cl1_hm = (model[6] == 4)
+        cl_hm  = (model[6] == 2)
 
-        # add noise to data; experimental
-        #noise = np.random.normal(0,1,100) # mean, sigma, length
-        print(flag)
         if flag == 'lin':
             cl0int = fit[0] + fit[1]*model[2][cl0]
             cl1int = classI_scale * (fit[0] + fit[1]*model[2][cl1])
+            cl0int_hm = fit[0] + fit[1]*model[2][cl0_hm]
+            cl1int_hm = classI_scale * (fit[0] + fit[1]*model[2][cl1_hm])
         elif flag == 'pow':
-            cl0int = fit[0]*model[2][cl1]**fit[1]
-            cl1int =classI_scale * (fit[0]*model[2][cl1]**fit[1])
+            cl0int = fit[0]*model[2][cl0]**fit[1]
+            cl1int = classI_scale * (fit[0]*model[2][cl1]**fit[1])
+            cl0int_hm = fit[0]*model[2][cl1_hm]**fit[1]
+            cl1int_hm = classI_scale * (fit[0]*model[2][cl1_hm]**fit[1])
 
-        im = [sum(cl0int)+sum(cl1int)]
+        im = [sum(cl0int)+sum(cl1int)+sum(cl0int_hm)+sum(cl1int_hm)]
         mass=[sum(model[2])/0.03]
         N=[len(model[2])]
         if output == 1:

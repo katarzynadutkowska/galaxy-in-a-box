@@ -1,6 +1,6 @@
 Mcm     10000.0      # Molecular cloud mass (do not change this one if you're only running the galaxy-in-a-box)
-SFE     0.1          # Star formation efficiency
-imf     0.0          # Initial mass function, 0 = standard, 1 = top-heavy, 2 = bottom-heavy
+SFE     0.01         # Star formation efficiency
+imf     0            # Initial mass function, 0 = standard, 1 = top-heavy, 2 = bottom-heavy
 tff     1.0          # Free fall time scaling
 ccccc   0000000000   # Usually no need to modify anything below this line
 r0      1.           # initial radius (pc)
