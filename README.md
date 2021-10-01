@@ -1,6 +1,6 @@
 # Galaxy-in-a-box
 
-Statistical model of sub-millimeter emission from embedded star forming clusters in galaxies. The paper describing the model is currently in preparation (Dutkowska, Kristensen & Bergin 2021). The model is written in Python 3 and uses following packages:
+Statistical model of sub-millimeter emission from embedded star forming clusters in galaxies. The paper describing the model is currently in preparation (Dutkowska, Kristensen & Bergin 2021). The model is written in Python 3 and uses following packages that may require installation:
 - astropy
 - matplotlib
 - mpl_toolkits
