@@ -80,12 +80,12 @@ print('The code is now running. Please wait.')
 ################################################################################
 
 cluster_setup = {}
-for line in open(os.path.join(path_main,"setup_files","galaxy","cluster_setup.dat"),"r").readlines():
+for line in open(os.path.join(path_main,setup_galaxy,"cluster_setup.dat"),"r").readlines():
 	cluster_setup[line.split()[0]]=float(line.split()[1])
 
-SFE_val    = cluster_setup['SFE']
-imf_val    = int(cluster_setup['imf'])
-tff_val    = cluster_setup['tff']
+SFE_val    = [cluster_setup['SFE']]
+imf_val    = [int(cluster_setup['imf'])]
+tff_val    = [cluster_setup['tff']]
 start      = 1           # of the iteration
 end        = it_number+1 # end of the iteration
 iterat     = np.arange(start,end,1)

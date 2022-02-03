@@ -15,6 +15,13 @@ import csv
 import os
 import requests
 
+path_main             = os.getcwd()
+results_path          = os.path.join(path_main,"results")
+setup_files_cluster   = os.path.join(path_main,"setup_files","cluster")
+cluster_FILE          = os.path.join(results_path,"galaxycluster_emission.csv")
+cluster_SETUP         = os.path.join(setup_files_cluster,"cluster_setup_change.dat")
+cluster_image_SETUP   = os.path.join(setup_files_cluster,"image_setup_change.dat")
+
 ################################################################################
 #
 # Constants in CGS units -- will add unit conversion later
@@ -147,7 +154,7 @@ class Mod_Template:
 	############################################################################
 	# Random mass plus radial distributions
 	############################################################################
-    def main(self,output = 1, FILE = "./results/galaxycluster_emission.csv"):
+    def main(self,output = 1, FILE = cluster_FILE, SETUP_image = cluster_image_SETUP, PATH_dist = results_path):
 
         config={}
         f=open('./setup_files/image_setup_change.dat','r')

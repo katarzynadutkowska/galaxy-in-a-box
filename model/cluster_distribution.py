@@ -11,7 +11,13 @@ from os.path import isfile, join
 import sys
 from sympy.solvers import nsolve
 from sympy import Symbol, exp
+import os
 
+path_main             = os.getcwd()
+results_path          = os.path.join(path_main,"results")
+setup_files_cluster   = os.path.join(path_main,"setup_files","cluster")
+cluster_SETUP         = os.path.join(setup_files_cluster,"cluster_setup_change.dat")
+dist_file             = os.path.join(results_path,"distribution.npy")
 
 ################################################################################
 #
@@ -148,7 +154,8 @@ class Mod_MassRad:
         tffscale=1.0,
         SFE=0.03,
         imf_type=0,
-        output=1):
+        output=1,
+        FILE_dist = dist_file):
 
         m_temp = myf.mass_dist(mmin = 0.01, mmax = 100., Mcm = Mcm, imf_type = imf_type, SFE=SFE)
         N=len(m_temp)
@@ -209,7 +216,7 @@ class Mod_MassRad:
 
         #if not os.path.exists('output_distribution'):
         if output == 1:
-            f=open('./results/output_distribution','w')
+            f=open(os.path.join(results_path,"output_distribution"),'w')
             f.write('min(M), max(M) = %4.2f, %4.2f Msun\n' %(min(m_temp), max(m_temp)))
             f.write('Total cluster mass: %6.2f \n' %(sum(self.m)))
             f.write('Rmax = %4.2f pc \n' %r)
@@ -236,7 +243,7 @@ class Mod_MassRad:
         #print ('Spatial distribution calculated')
 
         space_dist=x,y,self.m,self.i,self.pa,self.vel,self.mass_flag
-        np.save('./results/distribution.npy',space_dist)
+        np.save(FILE_dist,space_dist)
 
 
 
@@ -250,7 +257,7 @@ class Mod_distribution:
     ############################################################################
     # define configuration etc
     ############################################################################
-    def __init__(self):
+    def __init__(self, FILE_cluster = cluster_SETUP):
 
         ########################################################################
         ########################################################################
@@ -261,7 +268,7 @@ class Mod_distribution:
         ########################################################################
 
         config={}
-        for line in open("./setup_files/cluster_setup_change.dat","r").readlines():
+        for line in open(FILE_cluster,"r").readlines():
             config[line.split()[0]]=float(line.split()[1])
             # print "%20s=%.5e" % (line.split()[0],config[line.split()[0]])
 
@@ -289,7 +296,7 @@ class Mod_distribution:
     ############################################################################
     # begin calculation
     ############################################################################
-    def calc(self, output = 1):
+    def calc(self, output = 1, FILE_dist = dist_file):
 
             self.massrad.mass_radius(
             Mcm = self.Mcm,
@@ -301,7 +308,8 @@ class Mod_distribution:
             tffscale = self.tffscale,
             SFE = self.SFE,
             imf_type = self.imf_type,
-            output= output)
+            output= output,
+            FILE_dist = FILE_dist)
 
 
             mass = self.massrad.m
