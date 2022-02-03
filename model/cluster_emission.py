@@ -87,7 +87,6 @@ ofit = ObsFit()
 #
 # Loading data from MySQL Water_Emission_Database
 #
-
 colnames = ['obs_id', 'object', 'obj_type', 'ra_2000', 'dec_2000', 'transition', 'freq',\
             'telescope', 'instrument', 'obs_res', 'distance', 'luminosity', 'tbol', 'menv',\
             'vlsr', 'flux', 'flux_err', 'unit','ref','extra']
