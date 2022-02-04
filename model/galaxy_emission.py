@@ -58,7 +58,7 @@ image_setup or galaxy_setup files before altering the code itself.\n')
 it_number = np.int32(input('How many times would you like to run the code?\n\
 : '))
 if it_number == 0:
-	sys.exit('0 is not a valid choice. Program stops execution.')
+	sys.exit('0 is not a valid choice. The program stops execution.')
 else:
 	pass
 print('\nThe code is now running. Please wait.\n')
@@ -71,7 +71,7 @@ print('\nThe code is now running. Please wait.\n')
 
 #it_number = 1     # here you can manually define the number of iterations
 #imf_val   = [0]   # choose the values you want to iterate over (imf type)
-#SFE_val   = [0.1] # -||- (star formation efficiency)
+#SFE_val   = [0.01] # -||- (star formation efficiency)
 #tff_val   = [1.0] # -||- (free-fall time scaling factor)
 #If you choose this option, please comment lines 86-88
 
@@ -109,7 +109,6 @@ for s in SFE_val:
 				csv_gal       = os.makedirs(os.path.join(gal_path,"csv"))
 				fits_gal      = os.mkdir(os.path.join(gal_path,"fits"))
 				setups        = os.mkdir(os.path.join(gal_path,"setup"))
-				print("Directories successfully created...")
 				# Below we ensure that each setup has it's own setup file,
 				# so that results are not mixed and each simulation is
 				# based on a proper file
@@ -117,6 +116,7 @@ for s in SFE_val:
 					 os.path.join(gal_path,"setup"))
 				shutil.copy(os.path.join(setup_cluster,"cluster_setup_change.dat"),\
 					 os.path.join(gal_path,"setup"))
+
 
 ################################################################################
 ######## Defining and starting timer to control the time of simulations ########
@@ -398,7 +398,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 					config[line.split()[0]]=line.split()[1]
 
 				# Parameters relating to new image
-				dist	   = float(config['bob'])   # distance to cluster in pc
+				dist	   = float(config['bob'])   # distance to galaxy in pc
 				pixel_size = float(config['psize']) # pixel size in arcsec
 				resolution = float(config['beam'])  # resolution of new image
 				dim_pix	   = int(config['dim'])	    # image size in pixels
@@ -467,12 +467,12 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				hdu = fits.PrimaryHDU(im_obs, header=header)
 				hdu.writeto(os.path.join(fits_path,fits_file), overwrite = True) #"_date="+timestr+
 
-				print ("Peak intensity in image %s is %6.5f Jy km/s/beam" %(str(z),im_obs.max()))
+				print ("Peak intensity in image %s ( gal%s) is %6.5f Jy km/s/beam" %(str(z),gal_vals,im_obs.max()))
 
-				'''
+				
 				### Image plotting ###
 				fig, ax = plt.subplots(figsize=[13,10])
-				my_cmap = copy.copy(matplotlib.cm.get_cmap('cividis)) # copy the default cmap
+				my_cmap = copy.copy(matplotlib.cm.get_cmap('bone')) # copy the default cmap
 				my_cmap.set_bad([0,0,0])
 
 				i_map = ax.imshow(
@@ -492,56 +492,29 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				ax.set_xlabel('Offset (kpc)')
 				ax.set_ylabel('Offset (kpc)')
 
-				#######################################################################################
-				########## Adding an inset with a beam size and a close up on the chosen region #######
-				#######################################################################################
-				#axins = ax.inset_axes([0.075, 0.072, 0.14, 0.14]) # [x0, y0, width, height] = lower-left corner of inset axes, and its width and height
-				#axins.imshow(
-				#im_obs,
-				#interpolation='nearest',
-				#cmap = my_cmap,
-				#norm = LogNorm(vmin=1e-6, vmax=np.amax(im_obs)),
-				#extent=(12,-12,-12,12)
-				#)
-
-				#x1, x2, y1, y2 = 5, 3, -2.5, -2           # Choosing a region to make a close up from
-				#axins.set_xlim(x1, x2)                      # "Cut" the inset image [x-axis] = show only the region you are interested in
-				#axins.set_ylim(y1, y2)                      # "Cut" the inset image [y-axis] = show only the region you are interested in
-				#axins.yaxis.get_major_locator().set_params(nbins=2)
-				#axins.xaxis.get_major_locator().set_params(nbins=2)
-				#axins.tick_params(axis='both', colors='white',length=12,labelsize=20)
-				#axins.set_color(axis='both', color='white')
-				#axins.spines['bottom'].set_color('white')
-				#axins.spines['top'].set_color('white')
-				#axins.spines['right'].set_color('white')
-				#axins.spines['left'].set_color('white') #--end od uncommenting
-				#ax.indicate_inset_zoom(axins, edgecolor="white")
-				#plt.xticks(visible=False)
-				#plt.yticks(visible=False)
-
 				############################## Add beam to your plot ##################################
-				beam_ellipse  = (resolution/conv_)*dist/1000. # beam size in data coorindates; here in kpc
+				beam_ellipse  = (resolution/conv_)*dist/1000. # beam size in data coorindates; here in kpc; not suitable for high-z beams
 				# (1) First we create a class of an anchored ellipse
 				class AnchoredEllipse(AnchoredOffsetbox):
 					def __init__(self, transform, width, height, angle, loc,
 								pad=0.1, borderpad=0.1, prop=None, frameon=False):
 						self._box = AuxTransformBox(transform)
-						self.ellipse = Ellipse((0, 0), width, height, angle,fill=False,color='white',hatch='//////')
+						self.ellipse = Ellipse((0, 0), width, height, angle,fill=True,color='white',)# hatch='//////')
 						self._box.add_artist(self.ellipse)
 						super().__init__(loc, pad=pad, borderpad=borderpad,
 										child=self._box, prop=prop, frameon=frameon)
 				# (2) Define your ellipse
 				def draw_ellipse(ax):
-					ae = AnchoredEllipse(axins.transData, width=beam_ellipse, height=beam_ellipse, angle=0.,
+					ae = AnchoredEllipse(ax.transData, width=beam_ellipse, height=beam_ellipse, angle=0.,
 										loc='lower left', pad=0.5, borderpad=0.2,
 										frameon=False)
 					ae.patch.set_facecolor('none')
 					ae.patch.set_edgecolor('none')
-					axins.add_artist(ae)
-				# (3) Draw it (comment the line below if you don't want to add your beam)
-				#draw_ellipse(axins)
+					ax.add_artist(ae)
+				# (3) Draw it (uncomment the line below if you want to add your beam)
+				#draw_ellipse(ax)
 
 				plt.savefig(os.path.join(results_path,pdf_file),bbox_inches='tight') #"_date="+timestr+
-				'''
+				
 
 t.stop() # Comment this if you commented the timer at the beginning of the code!
