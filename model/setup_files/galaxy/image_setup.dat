@@ -1,4 +1,4 @@
-dist ./results/distribution.npy    # name of distribution file
+dist distribution.npy    # name of distribution file
 bob 7.6e6                # distance (pc)
 dim 1280                 # image size (pixels)
 psize 0.51               # pixel size (arcsec)

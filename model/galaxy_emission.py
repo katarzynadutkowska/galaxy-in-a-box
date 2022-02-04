@@ -26,7 +26,7 @@ from timer import Timer # Here we call the 'timer.py' script added in the folder
 import cluster_distribution as cd
 import cluster_emission as ce
 import time
-
+import shutil
 timestr = time.strftime("%Y%m%d-%H%M%S") # Here we save the time of running the
                                          # script; can be used later to save files
 
@@ -61,7 +61,7 @@ if it_number == 0:
 	sys.exit('0 is not a valid choice. Program stops execution.')
 else:
 	pass
-print('The code is now running. Please wait.')
+print('\nThe code is now running. Please wait.\n')
 
 ################################################################################
 ####### Option 2: run the model for many values as many times as you want ######
@@ -101,20 +101,22 @@ for s in SFE_val:
 		for j in imf_val:
 			gal_name = "Galaxy_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)
 			gal_path = os.path.join(results_path,gal_name)
-			if not os.path.exists(gal_path):
+			if os.path.isdir(gal_path):
+				pass
+			else:
+				print("Creating new directories for: ",gal_name)
 				gal_directory = os.mkdir(gal_path)
-				csv_gal       = os.mkdir(os.path.join(gal_path,"csv"))
+				csv_gal       = os.makedirs(os.path.join(gal_path,"csv"))
 				fits_gal      = os.mkdir(os.path.join(gal_path,"fits"))
 				setups        = os.mkdir(os.path.join(gal_path,"setup"))
+				print("Directories successfully created...")
 				# Below we ensure that each setup has it's own setup file,
 				# so that results are not mixed and each simulation is
 				# based on a proper file
-				copy(os.path.join(setup_cluster,"image_setup_change.dat"),\
+				shutil.copy(os.path.join(setup_cluster,"image_setup_change.dat"),\
 					 os.path.join(gal_path,"setup"))
-				copy(os.path.join(setup_cluster,"cluster_setup_change.dat"),\
+				shutil.copy(os.path.join(setup_cluster,"cluster_setup_change.dat"),\
 					 os.path.join(gal_path,"setup"))
-			else:
-				pass
 
 ################################################################################
 ######## Defining and starting timer to control the time of simulations ########
@@ -539,7 +541,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				# (3) Draw it (comment the line below if you don't want to add your beam)
 				#draw_ellipse(axins)
 
-				plt.savefig("./results/Gal_Template"+"_tff="+str(n)+"_imf="+str(j)+"_SFE="+str(s)+"_iteration="+str(z)+".pdf",bbox_inches='tight') #"_date="+timestr+
+				plt.savefig(os.path.join(results_path,pdf_file),bbox_inches='tight') #"_date="+timestr+
 				'''
 
 t.stop() # Comment this if you commented the timer at the beginning of the code!

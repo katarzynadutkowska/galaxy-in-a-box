@@ -157,7 +157,7 @@ class Mod_Template:
     def main(self,output = 1, FILE = cluster_FILE, SETUP_image = cluster_image_SETUP, PATH_dist = results_path):
 
         config={}
-        f=open('./setup_files/image_setup_change.dat','r')
+        f=open(SETUP_image,'r')
         for line in f.readlines():
             config[line.split()[0]]=line.split()[1]
         # Parameters relating to new image
@@ -165,7 +165,9 @@ class Mod_Template:
         classI_scale = 0.1
         factor = 485.5 # for h2o  at 988 ghz
         #factor = 574.5 # for co at 1152 ghz
-        model = np.load(config['dist'])
+        fn_dist = config['dist']
+        pt_dist = os.path.join(PATH_dist,fn_dist)
+        model = np.load(pt_dist)
 
         tol_file = np.int32(config['tol'])   # fit tolerance: if probability greater, then hypothesis is rejected at 1 sigma
         mean_val = 0                         # mean of the distribution
@@ -200,14 +202,6 @@ class Mod_Template:
         if output == 1:
             print('Total emission from cluster is '+str(im))
             print('Total mass in cluster is '+str(mass))
-
-        config={}
-        for line in open("./setup_files/cluster_setup_change.dat","r").readlines():
-            config[line.split()[0]]=float(line.split()[1])
-
-        imf_type = config['imf']
-        tffscale = config['tff']
-        SFE = config['SFE']
 
         filename = FILE
 
