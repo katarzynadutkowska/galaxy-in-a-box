@@ -15,6 +15,13 @@ import csv
 import os
 import requests
 
+path_main             = os.getcwd()
+results_path          = os.path.join(path_main,"results")
+setup_files_cluster   = os.path.join(path_main,"setup_files","cluster")
+cluster_FILE          = os.path.join(results_path,"galaxycluster_emission.csv")
+cluster_SETUP         = os.path.join(setup_files_cluster,"cluster_setup_change.dat")
+cluster_image_SETUP   = os.path.join(setup_files_cluster,"image_setup_change.dat")
+
 ################################################################################
 #
 # Constants in CGS units -- will add unit conversion later
@@ -87,7 +94,6 @@ ofit = ObsFit()
 #
 # Loading data from MySQL Water_Emission_Database
 #
-
 colnames = ['obs_id', 'object', 'obj_type', 'ra_2000', 'dec_2000', 'transition', 'freq',\
             'telescope', 'instrument', 'obs_res', 'distance', 'luminosity', 'tbol', 'menv',\
             'vlsr', 'flux', 'flux_err', 'unit','ref','extra']
@@ -148,10 +154,10 @@ class Mod_Template:
 	############################################################################
 	# Random mass plus radial distributions
 	############################################################################
-    def main(self,output = 1, FILE = "./results/galaxycluster_emission.csv"):
+    def main(self,output = 1, FILE = cluster_FILE, SETUP_image = cluster_image_SETUP, PATH_dist = results_path):
 
         config={}
-        f=open('./setup_files/image_setup_change.dat','r')
+        f=open(SETUP_image,'r')
         for line in f.readlines():
             config[line.split()[0]]=line.split()[1]
         # Parameters relating to new image
@@ -159,7 +165,9 @@ class Mod_Template:
         classI_scale = 0.1
         factor = 485.5 # for h2o  at 988 ghz
         #factor = 574.5 # for co at 1152 ghz
-        model = np.load(config['dist'])
+        fn_dist = config['dist']
+        pt_dist = os.path.join(PATH_dist,fn_dist)
+        model = np.load(pt_dist)
 
         tol_file = np.int32(config['tol'])   # fit tolerance: if probability greater, then hypothesis is rejected at 1 sigma
         mean_val = 0                         # mean of the distribution
@@ -194,14 +202,6 @@ class Mod_Template:
         if output == 1:
             print('Total emission from cluster is '+str(im))
             print('Total mass in cluster is '+str(mass))
-
-        config={}
-        for line in open("./setup_files/cluster_setup_change.dat","r").readlines():
-            config[line.split()[0]]=float(line.split()[1])
-
-        imf_type = config['imf']
-        tffscale = config['tff']
-        SFE = config['SFE']
 
         filename = FILE
 
