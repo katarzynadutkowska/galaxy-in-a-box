@@ -1,0 +1,3 @@
+In this directory, all model outcomes are set to be saved. Once the model is running, a new folder is created for a galaxy with the specific set of main star formation parameters (star formation efficiency, free-fall time scaling factor, and IMF type), where there will be directories for fits and CSV files, as well as for the setup files. The pdf images will be saved directly in the results folder, with names describing the corresponding galaxy and simulation number.
+
+It is possible to easily change the main loop, so the model focuses on other star formation parameters available in the setup files (+ so that the result folders are named differently). The current choice of star formation parameters is based on the study by Dutkowska & Kristensen 2022, subm.
