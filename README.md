@@ -1,10 +1,10 @@
 # Galaxy-in-a-box
 
-<img src="https://katarzynadutkowska.github.io/WED/Images/gal-in-a-box-shadow.jpeg"
+<p style="text-align:center;">
+     <img src="https://katarzynadutkowska.github.io/WED/Images/gal-in-a-box-shadow.jpeg"
      alt="GIAB icon"
-     width="50%" 
-     height="auto;"
-     algin="middle"/>
+     width="50%" />
+</p>
 
 Statistical model of sub-millimeter emission from embedded star forming clusters in galaxies. The paper describing the model is already submitted (Dutkowska 
 & Kristensen 2022). The model is written in Python 3 and uses following packages that may require installation:
