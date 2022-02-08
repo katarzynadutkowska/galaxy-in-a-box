@@ -3,7 +3,7 @@
 <p style="text-align:center;">
      <img src="https://katarzynadutkowska.github.io/WED/Images/gal-in-a-box-shadow.jpeg"
      alt="GIAB icon"
-     width="50%" />
+     width="30%" />
 </p>
 
 Statistical model of sub-millimeter emission from embedded star forming clusters in galaxies. The paper describing the model is already submitted (Dutkowska 
