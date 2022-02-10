@@ -210,7 +210,7 @@ class Mod_Template:
         else:
             append_write = 'w' # make a new file if not
 
-        with open(filename, append_write) as f:
+        with open(filename, append_write, newline='') as f:
             writer = csv.writer(f, delimiter='\t')
             writer.writerows(zip(im,mass,N))
 

@@ -370,7 +370,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				mass = []
 				N = []
 
-				with open(outputfile, 'r') as file:
+				with open(outputfile, 'r', newline='') as file: # added newline='' because Windows
 					reader = csv.reader(file, delimiter='\t')
 					for row in reader:
 						im.append(float(row[0]))
@@ -469,7 +469,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 
 				print ("Peak intensity in image %s is %6.5f Jy km/s/beam" %(str(z),im_obs.max()))
 
-				'''
+				#'''
 				### Image plotting ###
 				fig, ax = plt.subplots(figsize=[13,10])
 				my_cmap = copy.copy(matplotlib.cm.get_cmap('cividis)) # copy the default cmap
@@ -520,28 +520,28 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				#plt.yticks(visible=False)
 
 				############################## Add beam to your plot ##################################
-				beam_ellipse  = (resolution/conv_)*dist/1000. # beam size in data coorindates; here in kpc
+				#beam_ellipse  = (resolution/conv_)*dist/1000. # beam size in data coorindates; here in kpc
 				# (1) First we create a class of an anchored ellipse
-				class AnchoredEllipse(AnchoredOffsetbox):
-					def __init__(self, transform, width, height, angle, loc,
-								pad=0.1, borderpad=0.1, prop=None, frameon=False):
-						self._box = AuxTransformBox(transform)
-						self.ellipse = Ellipse((0, 0), width, height, angle,fill=False,color='white',hatch='//////')
-						self._box.add_artist(self.ellipse)
-						super().__init__(loc, pad=pad, borderpad=borderpad,
-										child=self._box, prop=prop, frameon=frameon)
+				#class AnchoredEllipse(AnchoredOffsetbox):
+				#	def __init__(self, transform, width, height, angle, loc,
+				#				pad=0.1, borderpad=0.1, prop=None, frameon=False):
+				#		self._box = AuxTransformBox(transform)
+				#		self.ellipse = Ellipse((0, 0), width, height, angle,fill=False,color='white',hatch='//////')
+				#		self._box.add_artist(self.ellipse)
+				#		super().__init__(loc, pad=pad, borderpad=borderpad,
+				#						child=self._box, prop=prop, frameon=frameon)
 				# (2) Define your ellipse
-				def draw_ellipse(ax):
-					ae = AnchoredEllipse(axins.transData, width=beam_ellipse, height=beam_ellipse, angle=0.,
-										loc='lower left', pad=0.5, borderpad=0.2,
-										frameon=False)
-					ae.patch.set_facecolor('none')
-					ae.patch.set_edgecolor('none')
-					axins.add_artist(ae)
+				#def draw_ellipse(ax):
+				#	ae = AnchoredEllipse(axins.transData, width=beam_ellipse, height=beam_ellipse, angle=0.,
+				#						loc='lower left', pad=0.5, borderpad=0.2,
+				#						frameon=False)
+				#	ae.patch.set_facecolor('none')
+				#	ae.patch.set_edgecolor('none')
+				#	axins.add_artist(ae)
 				# (3) Draw it (comment the line below if you don't want to add your beam)
 				#draw_ellipse(axins)
 
 				plt.savefig(os.path.join(results_path,pdf_file),bbox_inches='tight') #"_date="+timestr+
-				'''
+				#'''
 
 t.stop() # Comment this if you commented the timer at the beginning of the code!

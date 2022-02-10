@@ -1,0 +1,6 @@
+dist distributions_Mcm=12080.08417253596_tff=1.0_imf=0_SFE=0.01_iteration=1.npy    # name of distribution file
+bob 7.6e6                # distance (pc)
+dim 1280                 # image size (pixels)
+psize 0.51               # pixel size (arcsec)
+beam 2.55                # beam (arcsec)
+tol 1                    # correlation tolerance in sigmas
