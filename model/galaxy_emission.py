@@ -472,7 +472,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				#'''
 				### Image plotting ###
 				fig, ax = plt.subplots(figsize=[13,10])
-				my_cmap = copy.copy(matplotlib.cm.get_cmap('cividis)) # copy the default cmap
+				my_cmap = copy.copy(matplotlib.cm.get_cmap('cividis')) # copy the default cmap
 				my_cmap.set_bad([0,0,0])
 
 				i_map = ax.imshow(

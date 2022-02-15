@@ -1,4 +1,4 @@
-Mcm     12080.08417253596      # Molecular cloud mass (do not change this one if you're only running the galaxy-in-a-box)
+Mcm     18150.84855953458      # Molecular cloud mass (do not change this one if you're only running the galaxy-in-a-box)
 SFE     0.01          # Star formation efficiency
 imf     0            # Initial mass function, 0 = standard, 1 = top-heavy, 2 = bottom-heavy
 tff     1.0          # Free fall time scaling
