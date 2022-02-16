@@ -502,7 +502,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				#		self.ellipse = Ellipse((0, 0), width, height, angle,fill=True,color='white',)# hatch='//////')
 				#		self._box.add_artist(self.ellipse)
 				#		super().__init__(loc, pad=pad, borderpad=borderpad,
-										child=self._box, prop=prop, frameon=frameon)
+				#						child=self._box, prop=prop, frameon=frameon)
 				# (2) Define your ellipse
 				#def draw_ellipse(ax):
 				#	ae = AnchoredEllipse(ax.transData, width=beam_ellipse, height=beam_ellipse, angle=0.,
