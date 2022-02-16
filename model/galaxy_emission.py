@@ -71,7 +71,7 @@ print('\nThe code is now running. Please wait.\n')
 
 #it_number = 1     # here you can manually define the number of iterations
 #imf_val   = [0]   # choose the values you want to iterate over (imf type)
-#SFE_val   = [0.01] # -||- (star formation efficiency)
+#SFE_val   = [0.1] # -||- (star formation efficiency)
 #tff_val   = [1.0] # -||- (free-fall time scaling factor)
 #If you choose this option, please comment lines 86-88
 
