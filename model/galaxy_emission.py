@@ -493,24 +493,24 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				ax.set_ylabel('Offset (kpc)')
 
 				############################## Add beam to your plot ##################################
-				beam_ellipse  = (resolution/conv_)*dist/1000. # beam size in data coorindates; here in kpc; not suitable for high-z beams
+				#beam_ellipse  = (resolution/conv_)*dist/1000. # beam size in data coorindates; here in kpc; not suitable for high-z beams
 				# (1) First we create a class of an anchored ellipse
-				class AnchoredEllipse(AnchoredOffsetbox):
-					def __init__(self, transform, width, height, angle, loc,
-								pad=0.1, borderpad=0.1, prop=None, frameon=False):
-						self._box = AuxTransformBox(transform)
-						self.ellipse = Ellipse((0, 0), width, height, angle,fill=True,color='white',)# hatch='//////')
-						self._box.add_artist(self.ellipse)
-						super().__init__(loc, pad=pad, borderpad=borderpad,
+				#class AnchoredEllipse(AnchoredOffsetbox):
+				#	def __init__(self, transform, width, height, angle, loc,
+				#				pad=0.1, borderpad=0.1, prop=None, frameon=False):
+				#		self._box = AuxTransformBox(transform)
+				#		self.ellipse = Ellipse((0, 0), width, height, angle,fill=True,color='white',)# hatch='//////')
+				#		self._box.add_artist(self.ellipse)
+				#		super().__init__(loc, pad=pad, borderpad=borderpad,
 										child=self._box, prop=prop, frameon=frameon)
 				# (2) Define your ellipse
-				def draw_ellipse(ax):
-					ae = AnchoredEllipse(ax.transData, width=beam_ellipse, height=beam_ellipse, angle=0.,
-										loc='lower left', pad=0.5, borderpad=0.2,
-										frameon=False)
-					ae.patch.set_facecolor('none')
-					ae.patch.set_edgecolor('none')
-					ax.add_artist(ae)
+				#def draw_ellipse(ax):
+				#	ae = AnchoredEllipse(ax.transData, width=beam_ellipse, height=beam_ellipse, angle=0.,
+				#						loc='lower left', pad=0.5, borderpad=0.2,
+				#						frameon=False)
+				#	ae.patch.set_facecolor('none')
+				#	ae.patch.set_edgecolor('none')
+				#	ax.add_artist(ae)
 				# (3) Draw it (uncomment the line below if you want to add your beam)
 				#draw_ellipse(ax)
 
