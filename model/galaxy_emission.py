@@ -469,7 +469,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 
 				print ("Peak intensity in image %s is %6.5f Jy km/s/beam" %(str(z),im_obs.max()))
 
-				#'''
+				'''
 				### Image plotting ###
 				fig, ax = plt.subplots(figsize=[13,10])
 				my_cmap = copy.copy(matplotlib.cm.get_cmap('cividis')) # copy the default cmap
@@ -542,6 +542,6 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				#draw_ellipse(axins)
 
 				plt.savefig(os.path.join(results_path,pdf_file),bbox_inches='tight') #"_date="+timestr+
-				#'''
+				'''
 
 t.stop() # Comment this if you commented the timer at the beginning of the code!

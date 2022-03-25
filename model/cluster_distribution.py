@@ -52,10 +52,120 @@ class Mod_MyFunctions:
             a1 = A1 * np.exp(-((x - np.log10(mc))**2)/2.0/sigma**2)
             a2 = A2 * (10.0**x)**(x0-2)
             return np.where(x <= np.log10(mnorm), a1, a2)
+        
+        # Chabrier 2001, from 0.1 to 100
+        if imf_type == 3:
+            
+            A1Chabrier01 = 0.376613899390368
+            
+            return A1Chabrier01 * 40.33 * x**(-3.3) * np.exp(- (716.4/x)**(0.25) )
+        
+        # Chabrier 2005, from 0.1 to 100
+        if imf_type == 4:
+            
+            A1Chabrier05 = 0.9652005
+            mcChabrier05 = 0.2
+            sigmaChabrier05 = 0.55
+            A2Chabrier05 = 0.4255185
+            x0Chabrier05 = 2.35
+
+            a1 = A1Chabrier05 * np.exp(-((x-np.log10(mcChabrier05))**2)/(2*sigmaChabrier05**2))
+            a2 = A2Chabrier05 * (10.0**x)**(x0Chabrier05)
+            
+            return np.where(x <= np.log10(mnorm), a1, a2)
+
+        # Cannonical IMF, from 0.1 to 100
+        if imf_type == 5:
+            
+            A1Caonical = 0.289159021998465
+            A2Caonical = 0.139654602092348
+            
+            a1 = A1Caonical * (10.0**x)**(-1.3)
+            a2 = A2Caonical * (10.0**x)**(-2.35)
+            return np.where(x <= np.log10(0.5), a1, a2)
+        
+        # Salpeter
+        if imf_type == 6:
+
+            #AKennicutt = 0.224935641926054
+            
+            #a1 = AKennicutt * (10.0**x)**(-1.4)
+            #a2 = AKennicutt * (10.0**x)**(-2.5)
+            return 0 # np.where(x <= np.log10(mnorm), a1, a2)
+
+        # Kennicutt (1983), Universal, from 0.1 to 100
+        if imf_type == 7:
+
+            AKennicutt = 0.224935641926054
+            
+            a1 = AKennicutt * (10.0**x)**(-1.4)
+            a2 = AKennicutt * (10.0**x)**(-2.5)
+            return np.where(x <= np.log10(mnorm), a1, a2)
+        
+        # Hopkins & Beacom (2006), Top-heavy, from 0.1 to 100
+        if imf_type == 8:
+
+            A1HnB06 = 0.211725271146086
+            A2HnB06 = 0.134928347205648
+            
+            a1 = A1HnB06 * (10.0**x)**(-1.5)
+            a2 = A2HnB06 * (10.0**x)**(-2.15)
+            return np.where(x <= np.log10(0.5), a1, a2)
+        
+        # Davé (2008), Top-heavy, from 0.1 to 100
+        if imf_type == 9:
+
+            A1Dave08 = 0.286276391369702
+            A2Dave08 = 0.143138195684851
+            
+            a1 = A1Dave08 * (10.0**x)**(-1.3)
+            a2 = A2Dave08 * (10.0**x)**(-2.3)
+            return np.where(x <= np.log10(0.5), a1, a2)
+        
+        # Hoversten & Glazebrook (2008), Universal, from 0.1 to 100
+        if imf_type == 10:
+
+            A1HnG08 = 0.223780768686911
+            A2HnG08 = 0.115555510479912
+            
+            a1 = A1HnG08 * (10.0**x)**(-1.5)
+            a2 = A2HnG08 * (10.0**x)**(-2.4535)
+            return np.where(x <= np.log10(0.5), a1, a2)
+
+        # Baldry & Glazebrook (2003), Universal, from 0.1 to 100
+        if imf_type == 11:
+
+            A1HnG08 = 0.214013734931171
+            A2HnG08 = 0.131740907069795
+            
+            a1 = A1HnG08 * (10.0**x)**(-1.5)
+            a2 = A2HnG08 * (10.0**x)**(-2.2)
+            return np.where(x <= np.log10(0.5), a1, a2)
+
+        def IMFfunc(K, xpow, Mlower, Mupper):
+                m = np.linspace(Mlower, Mupper, 500)
+                imff = K* (10.0**m)**(-xpow)
+                return imff
+
+        # Scalo 1986 (Fit), Universal, from 0.1 to 100
+        if imf_type == 11:
+            
+            
+            
+            A1HnG08 = 0.214013734931171
+            A2HnG08 = 0.131740907069795
+            
+            a1 = A1HnG08 * (10.0**x)**(-1.5)
+            a2 = A2HnG08 * (10.0**x)**(-2.2)
+            return np.where(x <= np.log10(0.5), a1, a2)
+
+
+
+        #
 
 
     def mass_dist(self,
-        mmin=0.01,
+        mmin=0.1, # mmin=0.01,
         mmax=100,
         Mcm=10000,
         imf_type=0,
@@ -63,7 +173,7 @@ class Mod_MyFunctions:
         mmin_log = np.log10(mmin)
         mmax_log = np.log10(mmax)
 
-        chunksize = int(Mcm * 0.3)
+        chunksize = int(Mcm * 0.6)
         result = np.array([], dtype=np.float64)
         while result.sum() <= SFE * Mcm:
             x = np.random.uniform(mmin_log, mmax_log, size=chunksize)
