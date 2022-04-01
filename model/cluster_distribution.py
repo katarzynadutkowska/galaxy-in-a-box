@@ -175,7 +175,7 @@ class Mod_MyFunctions:
             A3Scalo86 = 0.184135924897207
             A4Scalo86 = 0.0518965547762883
 
-            Rezultz = FourBreakIMF(xRand,A1=A1Scalo86,A2=A2Scalo86,A3=A3Scalo86,A4=A4Scalo86,x1=1.15,x2=2.1,x3=3.05,x4=2.5,k0=0.1,k1=0.5,k2=1,k3=10,k4=100)
+            Rezultz = FourBreakIMF(x,A1=A1Scalo86,A2=A2Scalo86,A3=A3Scalo86,A4=A4Scalo86,x1=1.15,x2=2.1,x3=3.05,x4=2.5,k0=0.1,k1=0.5,k2=1,k3=10,k4=100)
 
             return Rezultz
 
@@ -186,7 +186,7 @@ class Mod_MyFunctions:
             A2Scalo98 = 0.284451049966366
             A3Scalo98 = 0.113242002663081
 
-            Rezultz = ThreeBreakIMF(xRand,A1=A1Scalo98,A2=A2Scalo98,A3=A3Scalo98,x1=1.15,x2=2.1,x3=3.05,k0=0.1,k1=1,k2=10,k3=100)
+            Rezultz = ThreeBreakIMF(x,A1=A1Scalo98,A2=A2Scalo98,A3=A3Scalo98,x1=1.15,x2=2.1,x3=3.05,k0=0.1,k1=1,k2=10,k3=100)
 
             return Rezultz
 
@@ -233,7 +233,7 @@ class Mod_MyFunctions:
             A2FardalPaunchy07 = 0.216011138630843
             A3FardalPaunchy07 = 0.752194473653271
 
-            Rezultz = ThreeBreakIMF(xRand,A1=A1FardalPaunchy07,A2=A2FardalPaunchy07,A3=A3FardalPaunchy07,x1=1,x2=1.7,x3=2.6,k0=0.1,k1=0.5,k2=4,k3=100)
+            Rezultz = ThreeBreakIMF(x,A1=A1FardalPaunchy07,A2=A2FardalPaunchy07,A3=A3FardalPaunchy07,x1=1,x2=1.7,x3=2.6,k0=0.1,k1=0.5,k2=4,k3=100)
 
             return Rezultz
 
@@ -246,6 +246,114 @@ class Mod_MyFunctions:
 
             return a1
 
+        # Kroupa 2001, Universal, from 0.01 to 100
+        if imf_type == 20:
+            
+            A1Kroupa01 = 0.350911129985083
+            A2Kroupa01 = 0.158972099575776
+            A3Kroupa01 = 0.0794860497878882
+
+            Rezultz = ThreeBreakIMF(x,A1=A1Kroupa01,A2=A2Kroupa01,A3=A3Kroupa01,x1=0.3,x2=1.3,x3=2.3,k0=0.01,k1=0.08,k2=0.5,k3=100)
+
+            return Rezultz
+        
+        # Modified Kroupa01 1 (form Meurer et al. 2009), Top-light, from 0.01 to 100
+        if imf_type == 21:
+            
+            A1mod1Kroupa01 = 2.12598723577527
+            A2mod1Kroupa01 = 0.170078978862021
+            A3mod1Kroupa01 = 0.0425197447155053
+
+            Rezultz = ThreeBreakIMF(x,A1=A1mod1Kroupa01,A2=A2mod1Kroupa01,A3=A3mod1Kroupa01,x1=0.3,x2=1.3,x3=3.3,k0=0.01,k1=0.08,k2=0.5,k3=100)
+
+            return Rezultz
+
+        # Modified Kroupa01 2 (form Meurer et al. 2009), Top-light, from 0.01 to 100
+        if imf_type == 22:
+            
+            A1mod2Kroupa01 = 1.45165470227029
+            A2mod2Kroupa01 = 0.116132376181623
+
+            a1 = A1mod2Kroupa01 * (10.0**x)**(-0.3)
+            a1 = A2mod2Kroupa01 * (10.0**x)**(-1.3)
+
+            return np.where(x <= np.log10(0.08), a1, a2)
+
+        # Modified Kroupa01 3 (form Wilkins et al. 2008b), Universal, from 0.01 to 100
+        if imf_type == 23:
+            
+            A1mod3Kroupa01 = 1.99821313724425
+            A2mod3Kroupa01 = 0.159857050979540
+            A3mod3Kroupa01 = 0.0772058664879645
+
+            Rezultz = ThreeBreakIMF(x,A1=A1mod3Kroupa01,A2=A2mod3Kroupa01,A3=A3mod3Kroupa01,x1=0.3,x2=1.3,x3=2.35,k0=0.01,k1=0.08,k2=0.5,k3=100)
+
+            return Rezultz
+
+        # van Dokkum 2008, Bottom-light, from 0.01 to 100
+        if imf_type == 24:
+            
+            A1Chabrier05 = 0.9652005
+            mcChabrier05 = 0.2
+            sigmaChabrier05 = 0.55
+            A2Chabrier05 = 0.4255185
+            x0Chabrier05 = 2.35
+
+            A1VD08             = 0.511
+            mcVD08             = 0.079 # 0.079, 0.4, 2
+            sigVD08            = 0.69 # 0.69
+            AhVD08             = 0.32
+            xVD08              = 2.3
+            ncVD08             = 25
+
+            a1 = A1VD08*(0.5*ncVD08*mcVD08)**(-xVD08) * np.exp(-((np.log10(x) - np.log10(mcVD08))**2)/(2*sigVD08**2))
+            a2 = AhVD08 * (10.0**x)**(x0Chabrier05)
+            
+            return np.where(x <= np.log10(ncVD08*mcVD08), a1, a2)
+
+        # Larson (from Portinari 2004), Bottom-light, from 0.01 to 100
+        if imf_type == 25:
+            
+            A1Larson04 = 0.817193205330865
+            
+            return A1Larson04 * 0.317 * x**(-2.35) * np.exp(- 0.3375/x)
+
+        # Modified Larson (from Portinari 2004), Bottom-light, from 0.01 to 100
+        if imf_type == 26:
+            
+            A1Larson04 = 0.592524862490177
+            
+            return A1Larson04 * 0.4337 * x**(-2.7) * np.exp(- 0.425/x)
+
+        # Cappellari et al. BH 2012, Bottom-heavy, from 0.01 to 100
+        if imf_type == 27:
+            
+            A1BHCappellari12 = 0.000452139586199803
+
+            a1 = A1BHCappellari12 * (10.0**x)**(-2.8)
+
+            return a1
+
+        # Cappellari et al. TH 2012, Top-heavy, from 0.01 to 100
+        if imf_type == 28:
+            
+            A1THCappellari12 = 0.0505050505050505
+
+            a1 = A1THCappellari12 * (10.0**x)**(-1.5)
+
+            return a1
+
+        # Miller-Scalo 1979, Universal, from 0.1 to 100
+        if imf_type == 29:
+            
+            A1MS1979 = 0.225276926316436
+            A2MS1979 = 0.225276926316436
+            A3MS1979 = 1.42140131201279
+
+            Rezultz = ThreeBreakIMF(x,A1=A1MS1979,A2=A2MS1979,A3=A3MS1979,x1=1.4,x2=2.5,x3=3.3,k0=0.1,k1=1,k2=10,k3=100)
+
+            return Rezultz
+        
         #
 
 
