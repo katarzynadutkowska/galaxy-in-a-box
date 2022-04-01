@@ -53,6 +53,31 @@ class Mod_MyFunctions:
             a2 = A2 * (10.0**x)**(x0-2)
             return np.where(x <= np.log10(mnorm), a1, a2)
         
+        def ThreeBreakIMF(x, A1, A2, A3, x1, x2, x3, k0, k1, k2, k3):
+            a1 = A1 *(10.0**x)**(-x1)
+            a2 = A2 *(10.0**x)**(-x2)
+            a3 = A3 *(10.0**x)**(-x3)
+
+            aa1_ = np.where((x > np.log10(k0)) & (x <= np.log10(k1)), a1, 5); aa1 = aa1_[aa1_ != 5]
+            aa2_ = np.where((x > np.log10(k1)) & (x <= np.log10(k2)), a2, 5); aa2 = aa2_[aa2_ != 5]
+            aa3_ = np.where((x > np.log10(k2)) & (x <= np.log10(k3)), a3, 5); aa3 = aa3_[aa3_ != 5]
+            Arr3B = np.concatenate((aa1,aa2,aa3))
+            return Arr3B
+
+
+        def FourBreakIMF(x, A1, A2, A3, A4, x1, x2, x3, x4, k0, k1, k2, k3, k4):
+            a1 = A1 *(10.0**x)**(-x1)
+            a2 = A2 *(10.0**x)**(-x2)
+            a3 = A3 *(10.0**x)**(-x3)
+            a4 = A4 *(10.0**x)**(-x4)
+
+            aa1_ = np.where((x > np.log10(k0)) & (x <= np.log10(k1)), a1, 5); aa1 = aa1_[aa1_ != 5]
+            aa2_ = np.where((x > np.log10(k1)) & (x <= np.log10(k2)), a2, 5); aa2 = aa2_[aa2_ != 5]
+            aa3_ = np.where((x > np.log10(k2)) & (x <= np.log10(k3)), a3, 5); aa3 = aa3_[aa3_ != 5]
+            aa4_ = np.where((x > np.log10(k3)) & (x <= np.log10(k4)), a4, 5); aa4 = aa4_[aa4_ != 5]
+            Arr4B = np.concatenate((aa1,aa2,aa3,aa4))
+            return Arr4B
+
         # Chabrier 2001, from 0.1 to 100
         if imf_type == 3:
             
@@ -142,24 +167,84 @@ class Mod_MyFunctions:
             a2 = A2HnG08 * (10.0**x)**(-2.2)
             return np.where(x <= np.log10(0.5), a1, a2)
 
-        def IMFfunc(K, xpow, Mlower, Mupper):
-                m = np.linspace(Mlower, Mupper, 500)
-                imff = K* (10.0**m)**(-xpow)
-                return imff
-
         # Scalo 1986 (Fit), Universal, from 0.1 to 100
-        if imf_type == 11:
+        if imf_type == 12:
             
-            
-            
-            A1HnG08 = 0.214013734931171
-            A2HnG08 = 0.131740907069795
-            
-            a1 = A1HnG08 * (10.0**x)**(-1.5)
-            a2 = A2HnG08 * (10.0**x)**(-2.2)
-            return np.where(x <= np.log10(0.5), a1, a2)
+            A1Scalo86 = 0.355727158636779
+            A2Scalo86 = 0.184135924897207
+            A3Scalo86 = 0.184135924897207
+            A4Scalo86 = 0.0518965547762883
 
+            Rezultz = FourBreakIMF(xRand,A1=A1Scalo86,A2=A2Scalo86,A3=A3Scalo86,A4=A4Scalo86,x1=1.15,x2=2.1,x3=3.05,x4=2.5,k0=0.1,k1=0.5,k2=1,k3=10,k4=100)
 
+            return Rezultz
+
+        # Scalo 1998, Universal, from 0.1 to 100
+        if imf_type == 13:
+            
+            A1Scalo98 = 0.284451049966366
+            A2Scalo98 = 0.284451049966366
+            A3Scalo98 = 0.113242002663081
+
+            Rezultz = ThreeBreakIMF(xRand,A1=A1Scalo98,A2=A2Scalo98,A3=A3Scalo98,x1=1.15,x2=2.1,x3=3.05,k0=0.1,k1=1,k2=10,k3=100)
+
+            return Rezultz
+
+        # van Dokkum & Conroy Very Bottom Heavy 2010, Bottom-heavy, from 0.1 to 100
+        if imf_type == 14:
+            
+            A1vanDnCVBH = 0.00790569440042097
+
+            a1 = A1vanDnCVBH * (10.0**x)**(-3.5)
+
+            return a1
+        
+        # van Dokkum & Conroy Bottom Heavy 2010, Bottom-heavy, from 0.1 to 100
+        if imf_type == 15:
+            
+            A1vanDnCBH = 0.0200000200000200
+
+            a1 = A1vanDnCBH * (10.0**x)**(-3.0)
+
+            return a1
+
+        # Renzini Steep IMF 2005, Bottom-heavy, from 0.1 to 100
+        if imf_type == 16:
+            
+            A1steepR05 = 0.0104970653510996
+
+            a1 = A1steepR05 * (10.0**x)**(-3.35)
+
+            return a1
+
+        # Renzini Flat IMF 2005, Top-heavy, from 0.1 to 100
+        if imf_type == 17:
+            
+            A1flatR05 = 0.171636364325098
+
+            a1 = A1flatR05 * (10.0**x)**(-1.35)
+
+            return a1
+
+        # Fardal et al. Paunchy 2007, Middle-heavy, from 0.1 to 100
+        if imf_type == 18:
+            
+            A1FardalPaunchy07 = 0.350911129985083
+            A2FardalPaunchy07 = 0.216011138630843
+            A3FardalPaunchy07 = 0.752194473653271
+
+            Rezultz = ThreeBreakIMF(xRand,A1=A1FardalPaunchy07,A2=A2FardalPaunchy07,A3=A3FardalPaunchy07,x1=1,x2=1.7,x3=2.6,k0=0.1,k1=0.5,k2=4,k3=100)
+
+            return Rezultz
+
+        # Fardal et al. Extremely Top Heavy 2007, Top-heavy, from 0.1 to 100
+        if imf_type == 19:
+            
+            A1ETHFardal07 = 0.106742530991320
+
+            a1 = A1ETHFardal07 * (10.0**x)**(-1.95)
+
+            return a1
 
         #
 
