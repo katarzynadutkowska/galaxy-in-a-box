@@ -54,28 +54,21 @@ class Mod_MyFunctions:
             return np.where(x <= np.log10(mnorm), a1, a2)
         
         def ThreeBreakIMF(x, A1, A2, A3, x1, x2, x3, k0, k1, k2, k3):
-            a1 = A1 *(10.0**x)**(-x1)
-            a2 = A2 *(10.0**x)**(-x2)
-            a3 = A3 *(10.0**x)**(-x3)
+            a1 = A1 *(10.0**x[np.where((x > np.log10(k0)) & (x <= np.log10(k1)))])**(-x1)
+            a2 = A2 *(10.0**x[np.where((x > np.log10(k1)) & (x <= np.log10(k2)))])**(-x2)
+            a3 = A3 *(10.0**x[np.where((x > np.log10(k2)) & (x <= np.log10(k3)))])**(-x3)
 
-            aa1_ = np.where((x > np.log10(k0)) & (x <= np.log10(k1)), a1, 5); aa1 = aa1_[aa1_ != 5]
-            aa2_ = np.where((x > np.log10(k1)) & (x <= np.log10(k2)), a2, 5); aa2 = aa2_[aa2_ != 5]
-            aa3_ = np.where((x > np.log10(k2)) & (x <= np.log10(k3)), a3, 5); aa3 = aa3_[aa3_ != 5]
-            Arr3B = np.concatenate((aa1,aa2,aa3))
+            Arr3B = np.concatenate((a1,a2,a3))
             return Arr3B
 
 
         def FourBreakIMF(x, A1, A2, A3, A4, x1, x2, x3, x4, k0, k1, k2, k3, k4):
-            a1 = A1 *(10.0**x)**(-x1)
-            a2 = A2 *(10.0**x)**(-x2)
-            a3 = A3 *(10.0**x)**(-x3)
-            a4 = A4 *(10.0**x)**(-x4)
+            a1 = A1 *(10.0**x[np.where((x > np.log10(k0)) & (x <= np.log10(k1)))])**(-x1)
+            a2 = A2 *(10.0**x[np.where((x > np.log10(k1)) & (x <= np.log10(k2)))])**(-x2)
+            a3 = A3 *(10.0**x[np.where((x > np.log10(k2)) & (x <= np.log10(k3)))])**(-x3)
+            a4 = A4 *(10.0**x[np.where((x > np.log10(k3)) & (x <= np.log10(k4)))])**(-x4)
 
-            aa1_ = np.where((x > np.log10(k0)) & (x <= np.log10(k1)), a1, 5); aa1 = aa1_[aa1_ != 5]
-            aa2_ = np.where((x > np.log10(k1)) & (x <= np.log10(k2)), a2, 5); aa2 = aa2_[aa2_ != 5]
-            aa3_ = np.where((x > np.log10(k2)) & (x <= np.log10(k3)), a3, 5); aa3 = aa3_[aa3_ != 5]
-            aa4_ = np.where((x > np.log10(k3)) & (x <= np.log10(k4)), a4, 5); aa4 = aa4_[aa4_ != 5]
-            Arr4B = np.concatenate((aa1,aa2,aa3,aa4))
+            Arr4B = np.concatenate((a1,a2,a3,a4))
             return Arr4B
 
         # Chabrier 2001, from 0.1 to 100
