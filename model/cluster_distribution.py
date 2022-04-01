@@ -102,7 +102,7 @@ class Mod_MyFunctions:
             a2 = A2Caonical * (10.0**x)**(-2.35)
             return np.where(x <= np.log10(0.5), a1, a2)
         
-        # Salpeter
+        # Salpeter 1955
         if imf_type == 6:
 
             #AKennicutt = 0.224935641926054
@@ -304,7 +304,7 @@ class Mod_MyFunctions:
             
             return np.where(x <= np.log10(ncVD08*mcVD08), a1, a2)
 
-        # Larson (from Portinari 2004), Bottom-light, from 0.01 to 100
+        # Larson 1998 (from Portinari 2004), Bottom-light, from 0.01 to 100
         if imf_type == 25:
             
             A1Larson04 = 0.817193205330865
