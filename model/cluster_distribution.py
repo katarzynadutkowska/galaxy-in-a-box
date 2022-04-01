@@ -102,14 +102,13 @@ class Mod_MyFunctions:
             a2 = A2Caonical * (10.0**x)**(-2.35)
             return np.where(x <= np.log10(0.5), a1, a2)
         
-        # Salpeter 1955
+        # Salpeter 1955, Bottom-heavy, from 0.01 to 100 (originally defied from exp(-0.4) to exp(1))
         if imf_type == 6:
 
-            #AKennicutt = 0.224935641926054
+            A1Salpeter = 0.926709878283741
+            a1 = A1Salpeter * (10.0**x)**(-1.3)
             
-            #a1 = AKennicutt * (10.0**x)**(-1.4)
-            #a2 = AKennicutt * (10.0**x)**(-2.5)
-            return 0 # np.where(x <= np.log10(mnorm), a1, a2)
+            return a1
 
         # Kennicutt (1983), Universal, from 0.1 to 100
         if imf_type == 7:
