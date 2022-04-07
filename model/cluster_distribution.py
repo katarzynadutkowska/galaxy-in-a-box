@@ -350,7 +350,7 @@ class Mod_MyFunctions:
 
 
     def mass_dist(self,
-        mmin=0.1, # mmin=0.01,
+        mmin=0.01, # mmin=0.01,
         mmax=100,
         Mcm=10000,
         imf_type=0,
@@ -362,7 +362,7 @@ class Mod_MyFunctions:
         result = np.array([], dtype=np.float64)
         while result.sum() <= SFE * Mcm:
             x = np.random.uniform(mmin_log, mmax_log, size=chunksize)
-            y = np.random.uniform(0, 1, size=chunksize)
+            y = np.random.uniform(0, 8, size=chunksize)
             result = np.hstack((result, 10 ** x[y < myf.imf(x, imf_type)]))
         return result[result.cumsum() <= SFE * Mcm]
 

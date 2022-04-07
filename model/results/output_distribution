@@ -1,13 +1,13 @@
-min(M), max(M) = 0.01, 25.18 Msun
-Total cluster mass: 1331.62 
-Rmax = 2.78 pc 
-Age distribution (Class 0, I, Flat, II, III): 0.03, 0.06, 0.06, 0.63, 0.23 
+min(M), max(M) = 0.01, 296.43 Msun
+Total cluster mass: 2163.49 
+Rmax = 0.72 pc 
+Age distribution (Class 0, I, Flat, II, III): 0.23, 0.35, 0.22, 0.19, 0.01 
  
-Number of HM cores:   1 
-Number of LM cores: 3973 
-Number of BD cores: 2494 
+Number of HM cores:  32 
+Number of LM cores:  66 
+Number of BD cores:  14 
  
-Number of LM Class 0 sources: 124 
-Number of LM Class I sources: 232 
-Number of HM Class 0 sources:   0 
-Number of HM Class I sources:   0 
+Number of LM Class 0 sources:  15 
+Number of LM Class I sources:  23 
+Number of HM Class 0 sources:   7 
+Number of HM Class I sources:  11 
