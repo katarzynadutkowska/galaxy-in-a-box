@@ -54,22 +54,53 @@ class Mod_MyFunctions:
             return np.where(x <= np.log10(mnorm), a1, a2)
         
         def ThreeBreakIMF(x, A1, A2, A3, x1, x2, x3, k0, k1, k2, k3):
-            a1 = A1 *(10.0**x[np.where((x > np.log10(k0)) & (x <= np.log10(k1)))])**(-x1)
-            a2 = A2 *(10.0**x[np.where((x > np.log10(k1)) & (x <= np.log10(k2)))])**(-x2)
-            a3 = A3 *(10.0**x[np.where((x > np.log10(k2)) & (x <= np.log10(k3)))])**(-x3)
+            y=[]#np.zeros(len(x))    
+            for i in x:
+                if (i > np.log10(k0)) and (i <= np.log10(k1)):
+                    y.append(A1*(10.0**i)**(-x1))
+                if (i > np.log10(k1)) and (i <= np.log10(k2)):
+                    y.append(A2*(10.0**i)**(-x2))
+                if (i > np.log10(k2)) and (i <= np.log10(k3)):
+                    y.append(A3*(10.0**i)**(-x3))
 
-            Arr3B = np.concatenate((a1,a2,a3))
-            return Arr3B
+            #a1 = A1 *(10.0**x)**(-x1)
+            #a2 = A2 *(10.0**x)**(-x2)
+            #a3 = A3 *(10.0**x)**(-x3)
+            #aa1_ = np.where((x > np.log10(k0)) & (x <= np.log10(k1)), a1, 5); aa1 = aa1_[aa1_ != 5]
+            #aa2_ = np.where((x > np.log10(k1)) & (x <= np.log10(k2)), a2, 5); aa2 = aa2_[aa2_ != 5]
+            #aa3_ = np.where((x > np.log10(k2)) & (x <= np.log10(k3)), a3, 5); aa3 = aa3_[aa3_ != 5]
+            #Arr3B = np.concatenate((aa1,aa2,aa3))
+
+            #a1 = A1 * (10.0**x[(x > np.log10(k0) ) & (x <= np.log10(k1) )])**(-x1)
+            #a2 = A2 * (10.0**x[(x > np.log10(k1) ) & (x <= np.log10(k2) )])**(-x2)
+            #a3 = A3 * (10.0**x[(x > np.log10(k2) ) & (x <= np.log10(k3) )])**(-x3)
+            ##a4 = 1 * (10.0**x[(x > np.log10(k3)  ) & (x <= np.log10(k4) )])**(-x4)
+
+
+            #a1 = A1 *(10.0**x[np.where((x > np.log10(k0)) & (x <= np.log10(k1)))])**(-x1)
+            #a2 = A2 *(10.0**x[np.where((x > np.log10(k1)) & (x <= np.log10(k2)))])**(-x2)
+            #a3 = A3 *(10.0**x[np.where((x > np.log10(k2)) & (x <= np.log10(k3)))])**(-x3)
+            #Arr3B = np.concatenate((a1,a2,a3))
+            return y #Arr3B
 
 
         def FourBreakIMF(x, A1, A2, A3, A4, x1, x2, x3, x4, k0, k1, k2, k3, k4):
-            a1 = A1 *(10.0**x[np.where((x > np.log10(k0)) & (x <= np.log10(k1)))])**(-x1)
-            a2 = A2 *(10.0**x[np.where((x > np.log10(k1)) & (x <= np.log10(k2)))])**(-x2)
-            a3 = A3 *(10.0**x[np.where((x > np.log10(k2)) & (x <= np.log10(k3)))])**(-x3)
-            a4 = A4 *(10.0**x[np.where((x > np.log10(k3)) & (x <= np.log10(k4)))])**(-x4)
-
-            Arr4B = np.concatenate((a1,a2,a3,a4))
-            return Arr4B
+            y=[]#np.zeros(len(x))    
+            for i in x:
+                if (i > np.log10(k0)) and (i <= np.log10(k1)):
+                   y.append(A1*(10.0**i)**(-x1))
+                if (i > np.log10(k1)) and (i <= np.log10(k2)):
+                    y.append(A2*(10.0**i)**(-x2))
+                if (i > np.log10(k2)) and (i <= np.log10(k3)):
+                    y.append(A3*(10.0**i)**(-x3))
+                if (i > np.log10(k3)) and (i <= np.log10(k4)):
+                    y.append(A4*(10.0**i)**(-x4))
+            #a1 = A1 *(10.0**x[np.where((x > np.log10(k0)) & (x <= np.log10(k1)))])**(-x1)
+            #a2 = A2 *(10.0**x[np.where((x > np.log10(k1)) & (x <= np.log10(k2)))])**(-x2)
+            #a3 = A3 *(10.0**x[np.where((x > np.log10(k2)) & (x <= np.log10(k3)))])**(-x3)
+            #a4 = A4 *(10.0**x[np.where((x > np.log10(k3)) & (x <= np.log10(k4)))])**(-x4)
+            #Arr4B = np.concatenate((a1,a2,a3,a4))
+            return y
 
         # Chabrier 2001, from 0.1 to 100
         if imf_type == 3:
@@ -260,16 +291,30 @@ class Mod_MyFunctions:
 
             return Rezultz
 
-        # Modified Kroupa01 2 (form Meurer et al. 2009), Top-light, from 0.01 to 100
+        # Modified Kroupa01 2 (form Meurer et al. 2009), Top-heavy, from 0.01 to 100
         if imf_type == 22:
             
             A1mod2Kroupa01 = 1.45165470227029
             A2mod2Kroupa01 = 0.116132376181623
 
             a1 = A1mod2Kroupa01 * (10.0**x)**(-0.3)
-            a1 = A2mod2Kroupa01 * (10.0**x)**(-1.3)
+            a2 = A2mod2Kroupa01 * (10.0**x)**(-1.3)
 
             return np.where(x <= np.log10(0.08), a1, a2)
+
+
+        # Modified Kroupa01 2 (form Meurer et al. 2009), Top-heavy, from 0.01 to 100
+        if imf_type == 220:
+            
+            A1mod2Kroupa01 = 1.45165470227029
+            A2mod2Kroupa01 = 0.116132376181623
+
+            #a1 = A1mod2Kroupa01 * (10.0**x)**(-0.3)
+            #a2 = A2mod2Kroupa01 * (10.0**x)**(-1.3)
+
+            Rezultz = ThreeBreakIMF(x,A1=A1mod2Kroupa01,A2=A2mod2Kroupa01,A3=A2mod2Kroupa01,x1=0.3,x2=1.3,x3=1.3,k0=0.01,k1=0.08,k2=0.5,k3=100)
+
+            return Rezultz
 
         # Modified Kroupa01 3 (form Wilkins et al. 2008b), Universal, from 0.01 to 100
         if imf_type == 23:
@@ -362,7 +407,7 @@ class Mod_MyFunctions:
         result = np.array([], dtype=np.float64)
         while result.sum() <= SFE * Mcm:
             x = np.random.uniform(mmin_log, mmax_log, size=chunksize)
-            y = np.random.uniform(0, 8, size=chunksize)
+            y = np.random.uniform(0, 10, size=chunksize)
             result = np.hstack((result, 10 ** x[y < myf.imf(x, imf_type)]))
         return result[result.cumsum() <= SFE * Mcm]
 
