@@ -14,6 +14,15 @@ import sys
 import csv
 import os
 import requests
+from timer import Timer # Here we call the 'timer.py' script added in the folder
+import time
+timestr = time.strftime("%Y%m%d-%H%M%S") # Here we save the time of running the
+                                         # script; can be used later to save files
+
+### Can be commented (if you do so, consider commenting it also in the preamble)
+# Comment the timer before running the galaxy emission file, otherwise you’ll get 10000 lines
+t = Timer()
+#t.start()
 
 path_main             = os.getcwd()
 results_path          = os.path.join(path_main,"results")
@@ -222,3 +231,4 @@ class Mod_Template:
 if __name__ == "__main__":
     template=Mod_Template()
     template.main()
+#t.stop() # Comment this if you commented the timer at the beginning of the code!

@@ -54,6 +54,16 @@ class Mod_MyFunctions:
             return np.where(x <= np.log10(mnorm), a1, a2)
         
         def ThreeBreakIMF(x, A1, A2, A3, x1, x2, x3, k0, k1, k2, k3):
+            #x1 = x[(x > np.log10(k0) ) & (x <= np.log10(k1) )]
+            #x2 = x[(x > np.log10(k1) ) & (x <= np.log10(k2) )]
+            #x3 = x[(x > np.log10(k2) ) & (x <= np.log10(k3) )]
+#            x4 = x[(x > np.log10(k3) ) & (x <= np.log10(k4) )]
+
+            #a1 = A1 * (10.0**x1)**(-x1)
+            #a2 = A2 * (10.0**x2)**(-x2)
+            #a3 = A3 * (10.0**x3)**(-x3)
+#            a4 = A4 * (10.0**x4)**(-x4)
+
             y=[]#np.zeros(len(x))    
             for i in x:
                 if (i > np.log10(k0)) and (i <= np.log10(k1)):
@@ -74,14 +84,14 @@ class Mod_MyFunctions:
             #a1 = A1 * (10.0**x[(x > np.log10(k0) ) & (x <= np.log10(k1) )])**(-x1)
             #a2 = A2 * (10.0**x[(x > np.log10(k1) ) & (x <= np.log10(k2) )])**(-x2)
             #a3 = A3 * (10.0**x[(x > np.log10(k2) ) & (x <= np.log10(k3) )])**(-x3)
-            ##a4 = 1 * (10.0**x[(x > np.log10(k3)  ) & (x <= np.log10(k4) )])**(-x4)
+            ##a4 = A4 * (10.0**x[(x > np.log10(k3)  ) & (x <= np.log10(k4) )])**(-x4)
 
 
             #a1 = A1 *(10.0**x[np.where((x > np.log10(k0)) & (x <= np.log10(k1)))])**(-x1)
             #a2 = A2 *(10.0**x[np.where((x > np.log10(k1)) & (x <= np.log10(k2)))])**(-x2)
             #a3 = A3 *(10.0**x[np.where((x > np.log10(k2)) & (x <= np.log10(k3)))])**(-x3)
             #Arr3B = np.concatenate((a1,a2,a3))
-            return y #Arr3B
+            return y # Arr3B
 
 
         def FourBreakIMF(x, A1, A2, A3, A4, x1, x2, x3, x4, k0, k1, k2, k3, k4):
@@ -107,7 +117,7 @@ class Mod_MyFunctions:
             
             A1Chabrier01 = 0.376613899390368
             
-            return A1Chabrier01 * 40.33 * x**(-3.3) * np.exp(- (716.4/x)**(0.25) )
+            return A1Chabrier01 * 40.33 * (10.0**x)**(-3.3) * np.exp(- (716.4/(10.0**x))**(0.25) )
         
         # Chabrier 2005, from 0.1 to 100
         if imf_type == 4:
@@ -119,7 +129,7 @@ class Mod_MyFunctions:
             x0Chabrier05 = 2.35
 
             a1 = A1Chabrier05 * np.exp(-((x-np.log10(mcChabrier05))**2)/(2*sigmaChabrier05**2))
-            a2 = A2Chabrier05 * (10.0**x)**(x0Chabrier05)
+            a2 = A2Chabrier05 * (10.0**x)**(-x0Chabrier05)
             
             return np.where(x <= np.log10(mnorm), a1, a2)
 
@@ -330,11 +340,11 @@ class Mod_MyFunctions:
         # van Dokkum 2008, Bottom-light, from 0.01 to 100
         if imf_type == 24:
             
-            A1Chabrier05 = 0.9652005
-            mcChabrier05 = 0.2
-            sigmaChabrier05 = 0.55
-            A2Chabrier05 = 0.4255185
-            x0Chabrier05 = 2.35
+            #A1Chabrier05 = 0.9652005
+            #mcChabrier05 = 0.2
+            #sigmaChabrier05 = 0.55
+            #A2Chabrier05 = 0.4255185
+            #x0Chabrier05 = 2.35
 
             A1VD08             = 0.511
             mcVD08             = 0.079 # 0.079, 0.4, 2
@@ -344,7 +354,7 @@ class Mod_MyFunctions:
             ncVD08             = 25
 
             a1 = A1VD08*(0.5*ncVD08*mcVD08)**(-xVD08) * np.exp(-((np.log10(x) - np.log10(mcVD08))**2)/(2*sigVD08**2))
-            a2 = AhVD08 * (10.0**x)**(x0Chabrier05)
+            a2 = AhVD08 * (10.0**x)**(-xVD08)
             
             return np.where(x <= np.log10(ncVD08*mcVD08), a1, a2)
 
@@ -353,14 +363,14 @@ class Mod_MyFunctions:
             
             A1Larson04 = 0.817193205330865
             
-            return A1Larson04 * 0.317 * x**(-2.35) * np.exp(- 0.3375/x)
+            return A1Larson04 * 0.317 * (10.0**x)**(-2.35) * np.exp(- 0.3375/(10.0**x))
 
         # Modified Larson (from Portinari 2004), Bottom-light, from 0.01 to 100
         if imf_type == 26:
             
             A1Larson04 = 0.592524862490177
             
-            return A1Larson04 * 0.4337 * x**(-2.7) * np.exp(- 0.425/x)
+            return A1Larson04 * 0.4337 * (10.0**x)**(-2.7) * np.exp(- 0.425/(10.0**x))
 
         # Cappellari et al. BH 2012, Bottom-heavy, from 0.01 to 100
         if imf_type == 27:
@@ -383,6 +393,15 @@ class Mod_MyFunctions:
         # Miller-Scalo 1979, Universal, from 0.1 to 100
         if imf_type == 29:
             
+            #y=[]#np.zeros(len(x))    
+            #for i in x:
+            #    if (i > np.log10(0.01)) and (i <= np.log10(1)):
+            #        y.append(0.225276926316436*(10.0**i)**(-1.4))
+            #    if (i > np.log10(1)) and (i <= np.log10(10)):
+            #        y.append(0.225276926316436*(10.0**i)**(-2.5))
+            #    if (i > np.log10(10)) and (i <= np.log10(100)):
+            #        y.append(1.42140131201279*(10.0**i)**(-3.3))
+
             A1MS1979 = 0.225276926316436
             A2MS1979 = 0.225276926316436
             A3MS1979 = 1.42140131201279
@@ -391,6 +410,9 @@ class Mod_MyFunctions:
 
             return Rezultz
         
+        if imf_type == 30:
+            
+            return (10.0**x)**(-1) #np.where(x<= np.log10(1), (10.0**x)**1, (10.0**x)**2)
         #
 
 
