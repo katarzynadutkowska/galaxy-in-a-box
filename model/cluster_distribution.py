@@ -112,14 +112,14 @@ class Mod_MyFunctions:
             #Arr4B = np.concatenate((a1,a2,a3,a4))
             return y
 
-        # Chabrier 2001, from 0.1 to 100
+        # Chabrier 2001, from 0.01 to 100
         if imf_type == 3:
             
             A1Chabrier01 = 0.376613899390368
             
             return A1Chabrier01 * 40.33 * (10.0**x)**(-3.3) * np.exp(- (716.4/(10.0**x))**(0.25) )
         
-        # Chabrier 2005, from 0.1 to 100
+        # Chabrier 2005, from 0.01 to 100
         if imf_type == 4:
             
             A1Chabrier05 = 0.9652005
@@ -130,6 +130,20 @@ class Mod_MyFunctions:
 
             a1 = A1Chabrier05 * np.exp(-((x-np.log10(mcChabrier05))**2)/(2*sigmaChabrier05**2))
             a2 = A2Chabrier05 * (10.0**x)**(-x0Chabrier05)
+            
+            return np.where(x <= np.log10(mnorm), a1, a2)
+        
+        # Chabrier 2003 (but inserted myself and normalized, "standard", just to test), from 0.01 to 100
+        if imf_type == 444:
+            
+            A1Chabrier03 = 1.2999
+            mcChabrier03 = 0.079
+            sigmaChabrier03 = 0.69
+            A2Chabrier03 = 0.359
+            x0Chabrier03 = 2.3
+
+            a1 = A1Chabrier03 * np.exp(-((x-np.log10(mcChabrier03))**2)/(2*sigmaChabrier03**2))
+            a2 = A2Chabrier03 * (10.0**x)**(-x0Chabrier03)
             
             return np.where(x <= np.log10(mnorm), a1, a2)
 
@@ -353,7 +367,7 @@ class Mod_MyFunctions:
             xVD08              = 2.3
             ncVD08             = 25
 
-            a1 = A1VD08*(0.5*ncVD08*mcVD08)**(-xVD08) * np.exp(-((np.log10(x) - np.log10(mcVD08))**2)/(2*sigVD08**2))
+            a1 = A1VD08*(0.5*ncVD08*mcVD08)**(-xVD08) * np.exp(-((x - np.log10(mcVD08))**2)/(2*sigVD08**2))
             a2 = AhVD08 * (10.0**x)**(-xVD08)
             
             return np.where(x <= np.log10(ncVD08*mcVD08), a1, a2)
