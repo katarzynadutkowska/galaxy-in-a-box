@@ -63,7 +63,7 @@ class Mod_MyFunctions:
         mmin_log = np.log10(mmin)
         mmax_log = np.log10(mmax)
 
-        chunksize = int(Mcm * 0.3)
+        chunksize = int(Mcm * 0.5)
         result = np.array([], dtype=np.float64)
         while result.sum() <= SFE * Mcm:
             x = np.random.uniform(mmin_log, mmax_log, size=chunksize)
