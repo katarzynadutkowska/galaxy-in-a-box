@@ -75,7 +75,7 @@ class ObsFit:
 		if (fit_m[3] < tol) & (fit_m[2] > tol):
 			return [0, fit_m[1]], 'lin'
 		elif (fit_m[3] < tol) & (fit_m[2] < tol) & (fit_m[0] > 0):
-			return [fit_m[0], fit_m[1]], 'lin'
+			return [0, fit_m[1]], 'lin'
 		# If a linear fit is not good enough, try power-law:
 		else:
 			fit_m = ofit.lin_test(np.log10(x), np.log10(y))
