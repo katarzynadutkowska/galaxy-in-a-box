@@ -74,14 +74,10 @@ class ObsFit:
 		fit_m = ofit.lin_test(x, y)
 		if (fit_m[3] < tol) & (fit_m[2] > tol):
 			return [0, fit_m[1]], 'lin'
-		elif (fit_m[3] < tol) & (fit_m[2] < tol) & (fit_m[0] > 0):
-			return [0, fit_m[1]], 'lin'
 		# If a linear fit is not good enough, try power-law:
 		else:
 			fit_m = ofit.lin_test(np.log10(x), np.log10(y))
-			if (fit_m[3] < tol) & (fit_m[2] > tol):
-				return [0, fit_m[1]], 'pow'
-			elif (fit_m[3] < tol) & (fit_m[2] < tol):
+			if (fit_m[3] < tol) & (fit_m[2] < tol):
 				return [fit_m[0], fit_m[1]], 'pow'
 			else:
 				sys.exit()
@@ -132,7 +128,7 @@ l_bol = []
 
 for i in range(len(flux)):
     if flux[i] != None:
-        if flux[i] >= 0 and menv[i] != None:
+        if flux[i] >= 0 and menv[i] > 0:
             TdV.append(flux[i])
             l_bol.append(lbol[i])
             Dist.append(diss[i])
@@ -191,13 +187,13 @@ class Mod_Template:
             cl0int_hm = fit[0] + fit[1]*model[2][cl0_hm]
             cl1int_hm = classI_scale * (fit[0] + fit[1]*model[2][cl1_hm])
         elif flag == 'pow':
-            cl0int = fit[0]*model[2][cl0]**fit[1]
-            cl1int = classI_scale * (fit[0]*model[2][cl1]**fit[1])
-            cl0int_hm = fit[0]*model[2][cl1_hm]**fit[1]
-            cl1int_hm = classI_scale * (fit[0]*model[2][cl1_hm]**fit[1])
+            cl0int = 10**fit[0]*model[2][cl0]**fit[1]
+            cl1int = classI_scale * (10**fit[0]*model[2][cl1]**fit[1])
+            cl0int_hm = 10**fit[0]*model[2][cl1_hm]**fit[1]
+            cl1int_hm = classI_scale * (10**fit[0]*model[2][cl1_hm]**fit[1])
 
         im = [sum(cl0int)+sum(cl1int)+sum(cl0int_hm)+sum(cl1int_hm)]
-        mass=[sum(model[2])/0.03]
+        mass=[sum(model[2])]
         N=[len(model[2])]
         if output == 1:
             print('Total emission from cluster is '+str(im))
