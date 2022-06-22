@@ -6,8 +6,8 @@
      width="30%" />
 </p>
 
-Statistical model of sub-millimeter emission from embedded star forming clusters in galaxies. The paper describing the model is already submitted (Dutkowska 
-& Kristensen 2022). The model is written in Python 3 and uses following packages that may require installation:
+Statistical model of sub-millimeter emission from embedded star forming clusters in galaxies. The paper describing the model is in press ([Dutkowska 
+& Kristensen 2022](https://ui.adsabs.harvard.edu/abs/2022arXiv220601753D/abstract)). The model is written in Python 3 and uses following packages that may require installation:
 - astropy
 - matplotlib
 - mpl_toolkits
