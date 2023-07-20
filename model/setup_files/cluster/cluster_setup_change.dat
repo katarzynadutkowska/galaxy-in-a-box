@@ -2,6 +2,7 @@ Mcm     12114.832042387294      # Molecular cloud mass (do not change this one i
 SFE     0.1         # Star formation efficiency
 imf     0            # Initial mass function, 0 = standard, 1 = top-heavy, 2 = bottom-heavy
 tff     1.0          # Free fall time scaling
+sfr     0.0          # sfr
 ccccc   0000000000   # Usually no need to modify anything below this line
 r0      1.           # initial radius (pc)
 N0      300.         # initial number of stars

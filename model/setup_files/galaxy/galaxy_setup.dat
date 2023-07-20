@@ -1,6 +1,8 @@
-NC      1e4     # total number of clusters
-mmin    1e4     # min. cluster mass
-mmax    1e6     # max. cluster mass
+MC      1e8     # gas mass in the galaxy (M_sun)
+mmin    1e4     # min. cluster mass (M_sun)
+mmax    1e6     # max. cluster mass (M_sun)
+sfr     0.0     # star formation rate (M_sun/Myr); if 0.0 there are no constraints on the galactic SFR
+lfir    0.0     # L_FIR of the galaxy (L_sun); if 0.0 lfir not taken into account and MC is used as molecular mass of the galaxy
 Rg      12.0    # galactocentric radius (kpc)
 hR      2.38    # scale-length; Casasola et al. 2017; 1.04' +- 0.06
 alpha   1.64    # mass spectrum slope; Roman-Duval et al. 2010

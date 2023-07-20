@@ -71,12 +71,19 @@ class Mod_MyFunctions:
             result = np.hstack((result, 10 ** x[y < myf.imf(x, imf_type)]))
         return result[result.cumsum() <= SFE * Mcm]
 
-    def age_dist(self, m_temp, r, tffscale = 1.0):
+    def age_dist(self, m_temp, r, sfr, tffscale = 1.0):
         density=3*sum(m_temp)/(4*np.pi*r**3)
-        G=4.43*10**(-3) ##pc^3 Msol^-1 Myr^-2
+        G=4.43*10**(-3) #pc^3 Msol^-1 Myr^-2
         tff=0.5427*1/np.sqrt(G*density) #free fall time for cluster
 
-        age=tffscale*tff*np.random.uniform(0.0,1.0,size=1) #calculating current age from free fall time tff
+        tff_randomized = tff*np.random.uniform(0.0,1.0,size=1)
+
+        if sfr != 0.0:
+            tffscale = len(m_temp) * np.average(m_temp) * tff_randomized**(-1) * sfr**(-1)
+        else:
+            pass
+
+        age=tffscale*tff_randomized
 
         lmbdaSF=1/age
 
@@ -110,7 +117,7 @@ class Mod_MyFunctions:
 
         self.frac[4] = 1. - sum(self.frac[:4])
 
-        return self.frac
+        return self.frac, age
 
 myf=Mod_MyFunctions()
 
@@ -154,6 +161,7 @@ class Mod_MassRad:
         tffscale=1.0,
         SFE=0.03,
         imf_type=0,
+        sfr = 0.0,
         output=1,
         FILE_dist = dist_file):
 
@@ -174,7 +182,7 @@ class Mod_MassRad:
 
         # 2. Calculate age distribution
 
-        age_temp= myf.age_dist(m_temp, r, tffscale = tffscale)
+        age_temp, age= myf.age_dist(m_temp, r, tffscale = tffscale, sfr = sfr)
 
         #print ('Age fractions calculated')
 
@@ -241,9 +249,13 @@ class Mod_MassRad:
         self.vel = numpy.random.normal(dv, size=N)
 
         #print ('Spatial distribution calculated')
-
+        sfr_cluster = self.N*np.average(self.m)*(age*1e6)**(-1)
         space_dist=x,y,self.m,self.i,self.pa,self.vel,self.mass_flag
         np.save(FILE_dist,space_dist)
+        np.save("sfr_temp.npy",sfr_cluster)
+
+        
+
 
 
 
@@ -290,6 +302,8 @@ class Mod_distribution:
 
         self.dv = config['dv']   # internal velocity dispersion (only relevant if creating spectral cubes; not implemented at the moment)
 
+        self.sfr = config['sfr']
+
         self.massrad=Mod_MassRad()
 
 
@@ -316,9 +330,7 @@ class Mod_distribution:
             N = self.massrad.N
             if output == 1:
                 print("Number of stars in cluster is "+str(N))
-            # temp = numpy.zeros(N)
-            # temp2 = numpy.zeros(20)
-            # for i in range(0,N): temp[i] = log10(mass[i])
+                print("Average protostellar mass is "+str(np.average(mass))+" M_sun")
 
 ################################################################################
 #
