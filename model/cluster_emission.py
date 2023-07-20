@@ -195,9 +195,12 @@ class Mod_Template:
         im = [sum(cl0int)+sum(cl1int)+sum(cl0int_hm)+sum(cl1int_hm)]
         mass=[sum(model[2])]
         N=[len(model[2])]
+        sfr_path = "sfr_temp.npy"
+        sfr_cluster = np.load(sfr_path)
         if output == 1:
             print('Total emission from cluster is '+str(im))
             print('Total mass in cluster is '+str(mass))
+            print('Star formation rate: '+str(sfr_cluster))
 
         filename = FILE
 
@@ -208,7 +211,7 @@ class Mod_Template:
 
         with open(filename, append_write) as f:
             writer = csv.writer(f, delimiter='\t')
-            writer.writerows(zip(im,mass,N))
+            writer.writerows(zip(im,mass,N,sfr_cluster))
 
 
 ################################################################################

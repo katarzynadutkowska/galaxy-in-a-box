@@ -1,10 +1,15 @@
 # Galaxy-in-a-box authors: Katarzyna M. Dutkowska, Lars E. Kristensen,
 # with contribution of Thomas Jones and Markus Rasmussen
 # Copenhagen University, NBI & StarPlan, Copenhagen, Denmark
-# 2020-2021
+# 2020-2022
+# current version: 10/09/2022
 
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy import optimize
+from uncertainties import ufloat
+import uncertainties as uncert
+from uncertainties.umath import *
 import matplotlib.pyplot as plt
 import matplotlib
 import math
@@ -44,24 +49,24 @@ setup_cluster = os.path.join(path_main,"setup_files","cluster")
 ########           files and define number of iterations in a terminal.  #######
 ################################################################################
 
-print('╭━━━╮╱╱╭╮╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭╮')
-print('┃╭━╮┃╱╱┃┃╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱┃┃')
-print('┃┃╱╰╋━━┫┃╭━━┳╮╭┳╮╱╭╮╱╱╭┳━╮╱╱╱╭━━╮╱╱┃╰━┳━━┳╮╭╮')
-print('┃┃╭━┫╭╮┃┃┃╭╮┣╋╋┫┃╱┃┣━━╋┫╭╮┳━━┫╭╮┣━━┫╭╮┃╭╮┣╋╋╯')
-print('┃╰┻━┃╭╮┃╰┫╭╮┣╋╋┫╰━╯┣━━┫┃┃┃┣━━┫╭╮┣━━┫╰╯┃╰╯┣╋╋╮')
-print('╰━━━┻╯╰┻━┻╯╰┻╯╰┻━╮╭╯╱╱╰┻╯╰╯╱╱╰╯╰╯╱╱╰━━┻━━┻╯╰╯')
-print('╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭━╯┃')
-print('╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╰━━╯\n')
-print('Welcome!\n\
-Note: If you want to commit any changes, please look at cluster_setup,\n\
-image_setup or galaxy_setup files before altering the code itself.\n')
-it_number = np.int32(input('How many times would you like to run the code?\n\
-: '))
-if it_number == 0:
-	sys.exit('0 is not a valid choice. The program stops execution.')
-else:
-	pass
-print('\nThe code is now running. Please wait.\n')
+#print('╭━━━╮╱╱╭╮╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭╮')
+#print('┃╭━╮┃╱╱┃┃╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱┃┃')
+#print('┃┃╱╰╋━━┫┃╭━━┳╮╭┳╮╱╭╮╱╱╭┳━╮╱╱╱╭━━╮╱╱┃╰━┳━━┳╮╭╮')
+#print('┃┃╭━┫╭╮┃┃┃╭╮┣╋╋┫┃╱┃┣━━╋┫╭╮┳━━┫╭╮┣━━┫╭╮┃╭╮┣╋╋╯')
+#print('┃╰┻━┃╭╮┃╰┫╭╮┣╋╋┫╰━╯┣━━┫┃┃┃┣━━┫╭╮┣━━┫╰╯┃╰╯┣╋╋╮')
+#print('╰━━━┻╯╰┻━┻╯╰┻╯╰┻━╮╭╯╱╱╰┻╯╰╯╱╱╰╯╰╯╱╱╰━━┻━━┻╯╰╯')
+#print('╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭━╯┃')
+#print('╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╰━━╯\n')
+#print('Welcome!\n\
+#Note: If you want to commit any changes, please look at cluster_setup,\n\
+#image_setup or galaxy_setup files before altering the code itself.\n')
+#it_number = np.int32(input('How many times would you like to run the code?\n\
+#: '))
+#if it_number == 0:
+#	sys.exit('0 is not a valid choice. The program stops execution.')
+#else:
+#	pass
+#print('\nThe code is now running. Please wait.\n')
 
 ################################################################################
 ####### Option 2: run the model for many values as many times as you want ######
@@ -69,7 +74,7 @@ print('\nThe code is now running. Please wait.\n')
 #######       lines below, i.e., 72, 73, 74 and 75.                       ######
 ################################################################################
 
-#it_number = 1     # here you can manually define the number of iterations
+it_number = 1     # here you can manually define the number of iterations
 #imf_val   = [0]   # choose the values you want to iterate over (imf type)
 #SFE_val   = [0.1] # -||- (star formation efficiency)
 #tff_val   = [1.0] # -||- (free-fall time scaling factor)
@@ -162,7 +167,7 @@ plt.rcParams.update(params)
 ######################################################
 
 def spatial_mass_dist(
-	NC,                                # Total number of clusters
+	MC,                                # Total number of clusters
 	mmin,                              # Min. cluster mass
 	mmax):                             # Max. cluster mass
 
@@ -179,6 +184,7 @@ def spatial_mass_dist(
 	phi   = galaxy_setup['phi']        # phi (angle) coverage (deg)
 	hR    = galaxy_setup['hR']         # scale-length
 	Rg    = galaxy_setup['Rg']         # galactocentric radius (kpc)
+	sfr   = galaxy_setup['sfr']		   # star formation rate (M_sun/Myr)
 
 	phi = math.radians(phi)            # convert deg to rad
 
@@ -190,25 +196,31 @@ def spatial_mass_dist(
 	def mass_dist(
 		mmin,
 		mmax,
-		NC,
+		MC,
 		alpha):
 
-		result = []
-		while len(result) < NC:
-			x = np.random.uniform(np.log10(mmin), np.log10(mmax), size=10*NC)
-			y = np.random.uniform(0, 1, size=10*NC)
-			result.extend(x[np.where(y < mass_spectrum(x,alpha))])
+		mmin_log = np.log10(mmin)
+		mmax_log = np.log10(mmax)
+		chunksize = int(MC * 0.5)
 
-		md = np.array(result[:NC])
-		return 10**md
+		result = np.array([], dtype=np.float64)
+		while result.sum() < MC:
+			x = np.random.uniform(mmin_log, mmax_log, size=chunksize)
+			y = np.random.uniform(0, 1, size=chunksize)
+			result = np.hstack((result, 10 ** x[y < mass_spectrum(x,alpha)]))
+		return result[result.cumsum() <= MC]
 
-	MassDistribution = np.asarray(mass_dist(mmin = mmin, mmax = mmax, NC = np.int32(NC), alpha = alpha))
+	MassDistribution = np.asarray(mass_dist(mmin = mmin, mmax = mmax, MC = MC, alpha = alpha))
+	if len(MassDistribution)%2 == 1: 
+		MassDistribution = MassDistribution[:-1]
+	if len(MassDistribution)%2 == 0: 
+		MassDistribution = MassDistribution[:]
 	new_MassDistribution = [[i] for i in MassDistribution]
 
 	### Initial parameters for spatial distribution ###
 	### Based on Ringermacher & Mead 2009
 	mu = 0                             # centered on function spiral value
-	Nd = int(NC)                       # disk cluster number
+	Nd = int(len(MassDistribution))    # disk cluster number
 
 
 	### Creating exponential distribution ###
@@ -245,17 +257,35 @@ def spatial_mass_dist(
 	SpatialY         = SpatialMassArray[:, 1]
 	Mass             = SpatialMassArray[:, 2]
 
-	return Mass, SpatialX, SpatialY
+	return Mass, SpatialX, SpatialY, sfr
 
 
 galaxy_setup = {}
 for line in open(os.path.join(path_main,"setup_files","galaxy","galaxy_setup.dat"),"r").readlines():
 	galaxy_setup[line.split()[0]]=float(line.split()[1])
-NC    = galaxy_setup['NC']
+
+MC    = galaxy_setup['MC']
+lfir  = galaxy_setup['lfir']
 mmin  = galaxy_setup['mmin']
 mmax  = galaxy_setup['mmax']
 
-mass, X, Y = spatial_mass_dist(NC = NC, mmin = mmin, mmax = mmax)
+def linear(x, a, b): 
+    return a*x+b
+
+def lfir_to_mass(file_with_data,L_FIR):
+	obs = np.genfromtxt(os.path.join(path_main,"setup_files","galaxy",file_with_data), skip_header = 2)
+	popt, pcov = optimize.curve_fit(linear, np.log10(obs[:,0]*1e4), np.log10(obs[:,1]*1e4))
+	perr = np.sqrt(np.diag(pcov))
+	log_mvir  = ufloat(popt[0], perr[0])
+	intercept = ufloat(popt[1], perr[1])
+	M_VIR = L_FIR**(1/log_mvir) * (10**(-intercept))**(1/log_mvir)
+	return M_VIR
+
+if lfir != 0.0 :
+	MC = lfir_to_mass("lfir_mass.dat",lfir)
+	MC = uncert.nominal_value(MC)
+
+mass, X, Y, sfr = spatial_mass_dist(MC = MC, mmin = mmin, mmax = mmax)
 
 filename = os.path.join(results_path,"galaxycluster_emission.csv")
 if os.path.exists(filename):
@@ -294,6 +324,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				fits_file  = "Gal_Template"+gal_vals+iteration+".fits"
 				csv_file   = "gal_emission"+gal_vals+iteration+".csv"
 				pdf_file   = "Gal_Template"+gal_vals+iteration+".pdf"
+				sfr_file   = "SFR"+gal_vals+iteration+".dat"
 				#################################################################
 
 				#################################################################
@@ -309,7 +340,7 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				#################################################################
 					
 				for i in Mcm_gal: # CLUSTER LAYER THAT CHANGES - Mcm_gal contains masses of 1e4 GMCs in 1 galaxy
-
+					
 					#################################################################								
 					Mcm_value  = "_Mcm="+str(i)										# string with the currently used molecular cloud mass												
 					npy_file   = "distributions"+Mcm_value+gal_vals+iteration+".npy"
@@ -366,9 +397,10 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 
 					# here all of the calculations for 1 cluster end, 1 line is appended in the output file and the loop goes over the next
 
-				im = []
+				im   = []
 				mass = []
-				N = []
+				N    = []
+				SFR  = []
 
 				with open(outputfile, 'r') as file:
 					reader = csv.reader(file, delimiter='\t')
@@ -376,10 +408,139 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 						im.append(float(row[0]))
 						mass.append(float(row[1]))
 						N.append(float(row[2]))
+						SFR.append(float(row[3]))
+				####### -----------------------------------------------------------------------------
+				####### If the "sfr" parameter is specified in the galaxy_setup.dat, enter the loop.
+				####### The loop below ensures that the actual, derived sfr is not too far from the
+				####### desired value, but if possible, held within the allowed error limit described
+				####### by the acceptance_level variable
+				####### -----------------------------------------------------------------------------
+				SFR = np.asarray(SFR)
 
+				if sfr != 0.0:
+					sum_temp_list    = []
+					acceptance_level = 0.1 # accepted error level of the actual SFR; default 10%
+					left_condition   = sfr*(1-acceptance_level) # left-sided limit
+					right_condition  = sfr*(1+acceptance_level) # right-sided limit
+					####### --------------------------------------------------------------------------
+					####### if the total derived SFR for the galaxy is bigger then the limit, we start
+					####### the process of limiting the number of clusters in the simulated galaxy
+					####### --------------------------------------------------------------------------
+					if sum(SFR) >= sfr:
+						indexes     = [] # empty list for the indexes of clusters that will make it to the end of simulations
+						sum_sfr     = 0  # initial sum
+						index_count = 0  # index count
+						while sum_sfr <= sfr:
+							sum_sfr += float(SFR[index_count])
+							sum_temp_list.append(sum_sfr) # appending sums in case of the event below
+							index_count += 1
+						first_indexes     = np.arange(0,index_count,1)
+						indexes.extend(first_indexes)
+						flag = 0
+						####### ---------------------------------------------------------------------
+						####### if the last sum (stopping the while loop) is bigger than the accpeted
+						####### error level, we start trying different alternative options to get to
+						####### to the desired < sfr_min, sfr_max > as close as possible
+						####### ---------------------------------------------------------------------
+						if sum_sfr > right_condition:
+							flag = 1
+							indexes.pop()
+							rem_indexes       = np.arange(index_count,len(SFR),1) # appending the remaining indexes
+							match_indexes     = []                                # empty list for matching indexes (see velow)
+							for l in rem_indexes:
+								test_value = sum_temp_list[-2] + SFR[l]
+								####### ------------------------------------------------------------------------
+								####### if the sum before the one stopping the loop + any of the remaining SFRs
+								####### fulfills the condtion of < left_condition, right_condition >, append the
+								####### "matching" SFRs, and then choose the random value from these SFRs
+								####### ------------------------------------------------------------------------
+								if left_condition <= test_value <= right_condition:
+									match_indexes.append(l)
+							if len(match_indexes) > 0:
+								random_index = np.random.choice(match_indexes)
+								new_sum      = sum_temp_list[-2] + SFR[random_index]
+								sum_sfr      = new_sum
+								indexes.append(random_index)
+							####### ------------------------------------------------------------------------------
+							####### if there have been no "matching" pairs check for pairs (1) exceeding the limit
+							####### and (2) if the SFRs are too small, so you need to return to the while loop and
+							####### keep summing values. Then choose the value with the smallest error
+							####### ------------------------------------------------------------------------------
+							else:
+								list_below       = []
+								list_greater     = []
+								list_greater_val = []
+								for l in rem_indexes:
+									test_value = sum_temp_list[-2] + SFR[l]
+									### Check for option (1)
+									if test_value > right_condition:
+										list_greater.append(l)
+										list_greater_val.append(SFR[l])
+									### Check for option (2)
+									if test_value < left_condition:
+										list_below.append(l)
+								#### Option (2) - while loop
+								test_value  = sum_temp_list[-2]
+								sum_check = []
+								sum_index = []
+								for l in list_below:
+									if test_value <= left_condition:
+										sum_index.append(l)
+										test_value  += SFR[l]
+								error_greater = 100000 # set to a some giant number, to make sure that in case there is no error_greater the error_below will be chosen
+								if len(list_greater) > 0:
+									min_index 	  = list_greater[int(np.where(np.min(list_greater_val))[0])]
+									min_value 	  = sum_temp_list[-2] + np.min(list_greater_val)
+									error_greater = abs(min_value-sfr)/sfr
+								error_below = abs(sfr-test_value)/sfr
+								if error_below <= error_greater:
+									sum_sfr = test_value
+									indexes.extend(sum_index)
+								else:
+									sum_sfr = min_value
+									indexes.append(min_index)
+					else:
+						flag = 2
+						sum_sfr = sum(SFR)
+					
+					csv_file_2 = '_'.join(["cut",csv_file])
+					outputfile_2 = os.path.join(csv_path,csv_file_2)
+
+					im = np.asarray(im)
+					im = im[indexes]
+
+					mass = np.asarray(mass)
+					mass = mass[indexes]
+					
+					N = np.asarray(N)
+					N = N[indexes]
+
+					X = X[indexes]
+					Y = Y[indexes]
+					with open(outputfile_2, 'w') as file:
+						writer = csv.writer(file,delimiter='\t')
+						for i in range(len(im)):
+							data = [im[i],mass[i],N[i],SFR[i]]
+							writer.writerow(data)
+				
+					sfr_error = abs(sum_sfr-sfr)/sfr
+					all_sfr_information = np.array([[sum_sfr],[sfr_error],[sfr],[flag]])
+					np.savetxt(os.path.join(gal_path,sfr_file),np.transpose(all_sfr_information),header="Actual sfr\tError\tDesired\tFlag",delimiter="\t")
+				elif sfr == 0.0:
+					if lfir == 0.0:
+						flag = 8
+						mc_error = abs(sum(mass)-MC)/MC
+						all_sfr_information = np.array([[sum(SFR)],[sum(mass)],[mc_error],[MC],[flag]])
+						np.savetxt(os.path.join(gal_path,sfr_file),np.transpose(all_sfr_information),header="SFR\tMC actual\tMC error\tDesired\tFlag",delimiter="\t")
+					elif lfir != 0.0:
+						flag = 9
+						mc_error = abs(sum(mass)-MC)/MC
+						all_sfr_information = np.array([[sum(SFR)],[sum(mass)],[mc_error],[MC],[lfir],[flag]])
+						np.savetxt(os.path.join(gal_path,sfr_file),np.transpose(all_sfr_information),header="SFR\tMC actual\tMC error\tDesired\tL_FIR\tFlag",delimiter="\t")
+
+				ims = [[i] for i in im]
 				mass = [[i] for i in mass]
-				ims  = [[i] for i in im]
-				N	= [[i] for i in N]
+				N = [[i] for i in N]
 
 				comb  = np.append(ims,mass,1)
 				comb  = np.append(comb,N,1)
@@ -515,6 +676,6 @@ for z in iterat: # Number of repeated runs of the code with the same parameters 
 				#draw_ellipse(ax)
 
 				plt.savefig(os.path.join(results_path,pdf_file),bbox_inches='tight') #"_date="+timestr+
-				
+				os.remove(os.path.join(path_main,"sfr_temp.npy"))
 
 t.stop() # Comment this if you commented the timer at the beginning of the code!
