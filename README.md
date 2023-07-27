@@ -6,8 +6,10 @@
      width="30%" />
 </p>
 
-Statistical model of sub-millimeter emission from embedded star forming clusters in galaxies. The paper describing the model is in press ([Dutkowska 
-& Kristensen 2022](https://ui.adsabs.harvard.edu/abs/2022arXiv220601753D/abstract)). The model is written in Python 3 and uses following packages that may require installation:
+Statistical model of emission from embedded star-forming clusters in galaxies. [Dutkowska 
+& Kristensen 2022](https://ui.adsabs.harvard.edu/abs/2022arXiv220601753D/abstract) introduced and described the core of the model, together with a paremeter space study. In the version 2.0 (which is the new main version of the model), it is possible to set the number of clusters through the total mass of the molecular reservoir or the far-infrared luminosity of a given galaxy. It is also possible to impose (allowed error is 10%) and/or derive star formation rates of given clusters and galaxies, please see [Dutkowska & Kristensen 2023](https://ui.adsabs.harvard.edu/abs/2023A%26A...674A..95D/abstract) for more detials.
+
+The model is written in Python 3 and uses following packages that may require installation:
 - astropy
 - matplotlib
 - mpl_toolkits
@@ -16,7 +18,7 @@ Statistical model of sub-millimeter emission from embedded star forming clusters
 - sympy
 - pylab
 
-The galaxy-in-a-box model consists of three scripts stored in the **model** folder. The first (cluster_distribution) generates the star-forming cluster based on the number of stars, input initial mass function, spatial distribution and age distribution. The second (cluster_emission) takes an input data from the [Water Emission Database](https://katarzynadutkowska.github.io/WED/), determines the mass-intensity correlation and generates outflow emission for all low- to intermediate-mass Class 0 and I sources and high-mass protostars (here, they follow the same age distribution as the low- and intermediate-mass protostars). The output is stored as a CSV file. Both of the cluster scripts are based on the [**cluster-in-a-box** model by Kristensen & Bergin](https://github.com/egstrom/cluster-in-a-box). The third script (galaxy_emission) creates a spatial and mass distribution of giant molecular clouds along galactic arms, and then use two cluster scripts to simulate emission from clusters forming from these giant molecular clouds, and the output is stored in a form of a FITS image where the flux density is determined by the desired resolution, pixel scale and galaxy distance, and in a form of a CSV file with mass, flux and numbers or stars of each galactic cluster. There is a possibility to save a publication-ready integrated intensity map of the galaxy in a PDF format.
+The galaxy-in-a-box model consists of three scripts stored in the **model** folder. The first (cluster_distribution) generates the star-forming cluster based on the number of stars, input initial mass function, spatial distribution and age distribution. The second (cluster_emission) takes an input data from the [Water Emission Database](https://katarzynadutkowska.github.io/WED/), determines the mass-intensity correlation and generates outflow emission for all low- to high-mass Class 0 and I sources and high-mass protostars (here, high-mass protostars follow the same age distribution as the low- and intermediate-mass protostars). The output is stored as a CSV file. Both of the cluster scripts are based on the [**cluster-in-a-box** model by Kristensen & Bergin](https://github.com/egstrom/cluster-in-a-box). The third script (galaxy_emission) creates a spatial and mass distribution of giant molecular clouds along galactic arms, and then use two cluster scripts to simulate emission from clusters forming from these giant molecular clouds, and the output is stored in a form of a FITS image where the flux density is determined by the desired resolution, pixel scale and galaxy distance, and in a form of a CSV file with mass, flux and numbers or stars of each galactic cluster. There is a possibility to save a publication-ready integrated intensity map of the galaxy in a PDF format.
 
 Instructions to run the model:
 1. Run the model from the **/model/.** directory, where all of the codes are saved. 
