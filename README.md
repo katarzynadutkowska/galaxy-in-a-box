@@ -9,9 +9,9 @@
 Statistical model of emission from embedded star-forming clusters in galaxies. [Dutkowska 
 & Kristensen 2022](https://ui.adsabs.harvard.edu/abs/2022arXiv220601753D/abstract) introduced and described the core of the model, together with a paremeter space study. In the version 2.0 (which is the new main version of the model), it is possible to set the number of clusters through the total mass of the molecular reservoir or the far-infrared luminosity of a given galaxy. It is also possible to impose (allowed error is 10%) and/or derive star formation rates of given clusters and galaxies, please see [Dutkowska & Kristensen 2023](https://ui.adsabs.harvard.edu/abs/2023A%26A...674A..95D/abstract) for more detials.
 
-----
 Note: the model is in its super early stages, and was not developed as a part of a big collaboration. All inputs, collaborations, and ideas for what to include are more than welcome. 
------
+
+---
 
 The model is written in Python 3 and uses following packages that may require installation:
 - astropy
